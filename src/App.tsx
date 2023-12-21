@@ -1,13 +1,17 @@
-import { Container } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import "./App.css";
-import { MultiplicationЕable } from "./multiplicationTable/MultiplicationЕable";
+import { MultiplicationTableSolve } from "./multiplicationTable/MultiplicationTable";
+import { getTable } from "./calc/getMultiplicationTable";
 
 function App() {
   return (
     <>
-      <Container maxWidth="sm">
-        <MultiplicationЕable />
-      </Container>
+      <Stack maxWidth="sm">
+        <Typography variant="h2" color={"maroon"}>
+          Всезнайка
+        </Typography>
+        <MultiplicationTableSolve table={getTable()} />
+      </Stack>
     </>
   );
 }

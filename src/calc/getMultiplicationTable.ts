@@ -1,23 +1,39 @@
-const numbers = new Array(10).fill(1).map((_, i) => i + _);
+import {
+  MultiplicationTable,
+  Sign,
+  TableItem,
+} from "../types/multiplication.types";
 
-const getMults = (val: number): Record<number, number> => {
-  const result: Record<number, number> = {};
+export const numbers = new Array(9).fill(2).map((_, i) => i + _);
+
+const getMults = (val: number): TableItem[] => {
+  const result: TableItem[] = [];
   numbers.forEach((item: number) => {
-    result[item] = val * item;
+    result.push({
+      number1: item,
+      number2: val,
+      actionSign: Sign.multiplication,
+      answer: item * val,
+    });
   });
   return result;
 };
 
-const getDivisions = (val: number): Record<number, number> => {
-  const result: Record<number, number> = {};
+const getDivisions = (val: number): TableItem[] => {
+  const result: TableItem[] = [];
   numbers.forEach((item: number) => {
-    result[val * item] = item;
+    result.push({
+      number1: item * val,
+      number2: val,
+      actionSign: Sign.division,
+      answer: item,
+    });
   });
   return result;
 };
 
 export const getMultiplicationTable = () => {
-  const table: Record<number, Record<number, number>> = {};
+  const table: Record<number, TableItem[]> = {};
 
   numbers.forEach((item: number) => {
     table[item] = getMults(item);
@@ -27,7 +43,7 @@ export const getMultiplicationTable = () => {
 };
 
 export const getDivisionTable = () => {
-  const table: Record<number, Record<number, number>> = {};
+  const table: Record<number, TableItem[]> = {};
 
   numbers.forEach((item: number) => {
     table[item] = getDivisions(item);
@@ -36,9 +52,9 @@ export const getDivisionTable = () => {
   return table;
 };
 
-export const getTable = () => {
+export const getTable = (): MultiplicationTable => {
   return {
-    "*": getMultiplicationTable(),
-    "/": getDivisionTable(),
+    [Sign.multiplication]: getMultiplicationTable(),
+    [Sign.division]: getDivisionTable(),
   };
 };
