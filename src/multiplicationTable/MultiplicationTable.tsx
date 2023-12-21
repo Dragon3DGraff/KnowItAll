@@ -19,6 +19,8 @@ import {
   TableItem,
 } from "../types/multiplication.types";
 import { secondsToMin } from "../utils/secondsToMin";
+import { arrayShuffle } from "../utils/arrayShuffle";
+import { StorageHelper } from "../utils/StorageHelper";
 
 type Props = {
   table: MultiplicationTable;
@@ -26,7 +28,7 @@ type Props = {
 export const MultiplicationTableSolve = ({ table }: Props) => {
   const [selectedNumbers, setSelectedNumbers] = useState<
     Record<number, boolean>
-  >({});
+  >(StorageHelper.get("selectedNumbers"));
 
   const [results, setResults] = useState<Solution[]>([]);
   const [started, setStarted] = useState<boolean>(false);
@@ -102,7 +104,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     });
 
     if (taskArray.length) {
-      setTask(taskArray.slice(0, 3));
+      setTask(arrayShuffle(taskArray.slice(0, 38)));
 
       setStarted(true);
     }
@@ -116,6 +118,12 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     });
     setSelectedNumbers(newSelectedNumbers);
   };
+
+  useEffect(() => {
+    localStorage.setItem("selectedNumbers", JSON.stringify(selectedNumbers));
+  }, [selectedNumbers]);
+
+
 
   return (
     <Stack>
