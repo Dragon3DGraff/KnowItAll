@@ -123,7 +123,16 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     localStorage.setItem("selectedNumbers", JSON.stringify(selectedNumbers));
   }, [selectedNumbers]);
 
+  useEffect(() => {
+    const getServer = async () => {
+      const response = await fetch("/api/check/checkAuth", {
+        method: "POST",
+      });
+      console.log(response);
+    };
 
+    getServer();
+  }, []);
 
   return (
     <Stack>
