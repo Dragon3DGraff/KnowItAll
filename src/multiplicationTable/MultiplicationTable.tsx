@@ -34,10 +34,10 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [started, setStarted] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
   const [task, setTask] = useState<TableItem[]>([]);
-  const [interval, setIntervalNumber] = useState<number>();
+  const [interval, setIntervalNumber] = useState<NodeJS.Timeout>();
 
   useEffect(() => {
-    let interv: number;
+    let interv: number | NodeJS.Timeout;
     if (started) {
       interv = setInterval(() => {
         setTimer((prev) => {
