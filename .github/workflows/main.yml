@@ -40,4 +40,4 @@ jobs:
           strip_components: 1
         
       - name: Print Info
-        run: echo "Deployed at dragon3dgraff.ru/public_html/KnowItAll"
+        run: echo "Deployed to dragon3dgraff.ru/public_html/KnowItAll"
