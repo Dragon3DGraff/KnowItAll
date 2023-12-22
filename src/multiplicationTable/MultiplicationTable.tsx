@@ -104,7 +104,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     });
 
     if (taskArray.length) {
-      setTask(arrayShuffle(taskArray.slice(0, 38)));
+      arrayShuffle(taskArray);
+      setTask(taskArray.slice(0, 38));
 
       setStarted(true);
     }
