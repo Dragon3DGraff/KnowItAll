@@ -14,6 +14,7 @@ const getMults = (val: number): TableItem[] => {
       number2: val,
       actionSign: Sign.multiplication,
       answer: item * val,
+      id: `${item}${Sign.multiplication}${val}`,
     });
   });
   return result;
@@ -27,6 +28,7 @@ const getDivisions = (val: number): TableItem[] => {
       number2: val,
       actionSign: Sign.division,
       answer: item,
+      id: `${item * val}${Sign.division}${val}`,
     });
   });
   return result;
