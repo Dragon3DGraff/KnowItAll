@@ -28,7 +28,7 @@ type Props = {
 export const MultiplicationTableSolve = ({ table }: Props) => {
   const [selectedNumbers, setSelectedNumbers] = useState<
     Record<number, boolean>
-  >(StorageHelper.get("selectedNumbers"));
+  >(StorageHelper.get("selectedNumbers") ?? {});
 
   const [results, setResults] = useState<Solution[]>([]);
   const [started, setStarted] = useState<boolean>(false);
