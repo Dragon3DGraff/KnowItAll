@@ -1,14 +1,18 @@
-import { Box, IconButton, Input, Stack, Typography } from "@mui/material";
+import { Box, Input, Stack, Tooltip, Typography } from "@mui/material";
 import { Sign, Solution } from "../types/multiplication.types";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { useState } from "react";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 type Props = {
+  id: string;
   number1: number;
   number2: number;
   actionSign: Sign;
-  onSolve: (result: Solution) => void;
+  onSolve?: (result: Solution) => void;
   answer: number;
+  tabIndex: number;
+  userAnswer?: number;
 };
 export const Equation = ({
   number1,
@@ -16,22 +20,24 @@ export const Equation = ({
   actionSign,
   answer,
   onSolve,
+  tabIndex,
+  id,
+  userAnswer,
 }: Props) => {
   const [inputValue, setInputValue] = useState<number>();
-  const [userAnswer, setUserAnswer] = useState<number>();
 
-  const onButtonClickHandler = () => {
-    if (inputValue) {
-      setUserAnswer(inputValue);
+  const onInputChange = (e: { target: { value: string } }) => {
+    onSolve &&
       onSolve({
         number1,
         number2,
         actionSign,
-        result: answer === inputValue,
-        userAnswer: inputValue,
+        result: answer === Number.parseFloat(e.target.value),
+        userAnswer: Number.parseFloat(e.target.value),
         answer,
+        id,
       });
-    }
+    setInputValue(Number.parseFloat(e.target.value));
   };
 
   const getColor = () => {
@@ -47,6 +53,7 @@ export const Equation = ({
       alignItems={"center"}
       justifyContent={"end"}
       pr={"24px"}
+      my={0.5}
     >
       <Typography>{number1}</Typography>
       <Typography px={0.5}>{actionSign}</Typography>
@@ -63,9 +70,10 @@ export const Equation = ({
             type="number"
             inputProps={{ min: 0, max: 100 }}
             autoComplete="off"
-            onChange={(e) => setInputValue(Number.parseFloat(e.target.value))}
+            onChange={onInputChange}
             disableUnderline
             name={"answer"}
+            tabIndex={tabIndex}
             slotProps={{
               input: {
                 sx: { textAlign: "center", py: 0 },
@@ -75,14 +83,17 @@ export const Equation = ({
           />
         )}
       </Box>
-      <IconButton
-        color={getColor()}
-        aria-label="solve"
-        onClick={onButtonClickHandler}
-        size="small"
-      >
-        <TaskAltIcon />
-      </IconButton>
+      {userAnswer && (
+        <>
+          {userAnswer === answer ? (
+            <TaskAltIcon color={getColor()} />
+          ) : (
+            <Tooltip title={answer} disableInteractive>
+              <ReportProblemIcon color={getColor()} />
+            </Tooltip>
+          )}
+        </>
+      )}
     </Stack>
   );
 };

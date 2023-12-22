@@ -21,6 +21,10 @@ import {
 import { secondsToMin } from "../utils/secondsToMin";
 import { arrayShuffle } from "../utils/arrayShuffle";
 import { StorageHelper } from "../utils/StorageHelper";
+import TagFacesIcon from "@mui/icons-material/TagFaces";
+import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
+import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
+import MoodBadIcon from "@mui/icons-material/MoodBad";
 
 type Props = {
   table: MultiplicationTable;
@@ -32,6 +36,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   const [results, setResults] = useState<Solution[]>([]);
   const [started, setStarted] = useState<boolean>(false);
+  const [finished, setFinished] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
   const [task, setTask] = useState<TableItem[]>([]);
   const [interval, setIntervalNumber] = useState<NodeJS.Timeout>();
@@ -65,15 +70,19 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   };
 
   const onSolve = (result: Solution) => {
-    setResults((prev) => [...prev, result]);
+    setResults((prev) => {
+      if (prev.some((item) => item.id === result.id)) {
+        return prev.map((item) => (item.id === result.id ? result : item));
+      }
+      return [...prev, result];
+    });
   };
 
-  useEffect(() => {
-    if (interval && results.length === task.length) {
-      setIntervalNumber(undefined);
-      clearInterval(interval);
-    }
-  }, [results, interval, task.length]);
+  const onFinished = () => {
+    clearInterval(interval);
+    setIntervalNumber(undefined);
+    setFinished(true);
+  };
 
   const getTimerColor = (timer: number) => {
     let color = "darkgrey";
@@ -89,6 +98,23 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
     return color;
   };
+
+  const getTimerSmile = (timer: number) => {
+    let smile = <TagFacesIcon />;
+    if (timer > 90) {
+      smile = <SentimentSatisfiedIcon />;
+    }
+    if (timer > 120) {
+      smile = <SentimentVeryDissatisfiedIcon />;
+    }
+    if (timer >= 180) {
+      smile = <MoodBadIcon />;
+    }
+
+    return smile;
+  };
+
+  const allFilled = interval && results.length === task.length;
 
   const onStart = () => {
     const checkedNumbers: number[] = [];
@@ -125,17 +151,16 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   }, [selectedNumbers]);
 
   useEffect(() => {
-    const getServer = async () => {
-      const response = await fetch(
-        "https://tertiusaxis.ru/api/check/checkAuth",
-        {
-          method: "POST",
-        }
-      );
-      console.log(response);
-    };
-
-    getServer();
+    // const getServer = async () => {
+    //   const response = await fetch(
+    //     "https://tertiusaxis.ru/api/check/checkAuth",
+    //     {
+    //       method: "POST",
+    //     }
+    //   );
+    //   console.log(response);
+    // };
+    // getServer();
   }, []);
 
   const areAllSelected = () => {
@@ -143,27 +168,55 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     return numbers.length === selected.length;
   };
 
+  const onReplay = () => {
+    setTimer(0);
+    setResults([]);
+
+    setFinished(false);
+    setTask([]);
+    setStarted(false);
+  };
+
   return (
     <Stack>
       <Typography variant="h4">Таблица умножения</Typography>
       <Box
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
       >
-        {started ? (
-          <Stack direction={"row"}>
-            <Typography variant="h5" color={getTimerColor(timer)}>
-              {secondsToMin(timer)}
-            </Typography>
-            <Stack direction={"row"} alignItems={"flex-end"} gap={2} pl={2}>
+        <Stack direction={"row"}>
+          {started && (
+            <Stack direction={"row"} alignItems={"center"}>
+              <Box mr={1}>{getTimerSmile(timer)}</Box>
+              <Typography variant="h5" color={getTimerColor(timer)}>
+                {secondsToMin(timer)}
+              </Typography>{" "}
+            </Stack>
+          )}
+
+          {finished && (
+            <Stack
+              direction={"row"}
+              alignItems={"center"}
+              gap={2}
+              pl={2}
+              justifyContent={"center"}
+            >
               <Typography color={"#2e7d32"}>
                 Правильно {results.filter((item) => item.result).length}
               </Typography>
               <Typography color={"#FF0000"}>
                 Неправильно {results.filter((item) => !item.result).length}
               </Typography>
+              <Button onClick={onReplay}>Заново</Button>
             </Stack>
-          </Stack>
-        ) : (
+          )}
+        </Stack>
+
+        {!started && (
           <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
             <FormLabel component="legend">
               <Typography variant="h6">
@@ -197,22 +250,54 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         )}
       </Box>
       {started ? (
-        <Stack flexWrap={"wrap"} maxHeight={"60vh"}>
-          {task.map((tableItem) => (
-            <Equation
-              key={`${tableItem.answer} + ${tableItem.number1}`}
-              number1={tableItem.number1}
-              number2={tableItem.number2}
-              actionSign={tableItem.actionSign}
-              onSolve={onSolve}
-              answer={tableItem.answer}
-            />
-          ))}
+        <Stack flexWrap={"wrap"} maxHeight={"360px"} mt={1}>
+          {finished && results.length
+            ? results.map((result, i) => (
+                <Equation
+                  key={result.id}
+                  id={result.id}
+                  userAnswer={result.userAnswer}
+                  number1={result.number1}
+                  number2={result.number2}
+                  actionSign={result.actionSign}
+                  answer={result.answer}
+                  tabIndex={i}
+                />
+              ))
+            : task.map((tableItem, i) => (
+                <Equation
+                  key={tableItem.id}
+                  id={tableItem.id}
+                  userAnswer={undefined}
+                  number1={tableItem.number1}
+                  number2={tableItem.number2}
+                  actionSign={tableItem.actionSign}
+                  answer={tableItem.answer}
+                  tabIndex={i}
+                  onSolve={onSolve}
+                />
+              ))}
+          {allFilled && (
+            <Box my={1}>
+              <Button variant="contained" size="large" onClick={onFinished}>
+                Готово!
+              </Button>
+            </Box>
+          )}
+          {!allFilled && !finished && (
+            <Box my={1} mt={"auto"}>
+              <Button onClick={onReplay} sx={{ width: "fit-content" }}>
+                Сдаться
+              </Button>
+            </Box>
+          )}
         </Stack>
       ) : (
-        <Button variant="contained" size="large" onClick={onStart}>
-          Начали!
-        </Button>
+        <Box my={2}>
+          <Button variant="contained" size="large" onClick={onStart}>
+            Начали!
+          </Button>
+        </Box>
       )}
     </Stack>
   );
