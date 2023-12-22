@@ -126,14 +126,22 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   useEffect(() => {
     const getServer = async () => {
-      const response = await fetch("/api/check/checkAuth", {
-        method: "POST",
-      });
+      const response = await fetch(
+        "https://tertiusaxis.ru/api/check/checkAuth",
+        {
+          method: "POST",
+        }
+      );
       console.log(response);
     };
 
     getServer();
   }, []);
+
+  const areAllSelected = () => {
+    const selected = Object.values(selectedNumbers).filter(Boolean);
+    return numbers.length === selected.length;
+  };
 
   return (
     <Stack>
@@ -165,6 +173,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
             <Stack direction={"row"}>
               <FormGroup key={"all"}>
                 <FormControlLabel
+                  checked={areAllSelected()}
                   control={<Checkbox onChange={selectAllNumbers} name="all" />}
                   label="Все"
                 />
