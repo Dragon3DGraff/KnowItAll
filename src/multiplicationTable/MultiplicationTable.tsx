@@ -152,7 +152,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   useEffect(() => {
     const getServer = async () => {
-      const response = await fetch("/KnowItAll/api/check/checkAuth", {
+      const response = await fetch("/KnowItAll/site/api/check/checkAuth", {
         method: "POST",
       });
       console.log(response);
