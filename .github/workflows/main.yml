@@ -1,16 +1,16 @@
 name: Deploy to server
 
 env:
- DEPLOY_PATH: dragon3dgraff.ru/public_html/KnowItAll
- BUILD_SCRIPT_OUTPUT: dist
+  DEPLOY_PATH: dragon3dgraff.ru/public_html/KnowItAll/client
+  BUILD_SCRIPT_OUTPUT: dist
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -27,7 +27,7 @@ jobs:
       # Собираем приложение
       - name: Build Application
         run: npm run build
-    
+
       - name: Deploy to Server
         uses: appleboy/scp-action@master
         with:
@@ -38,6 +38,6 @@ jobs:
           target: ${{ env.DEPLOY_PATH }}
           rm: true
           strip_components: 1
-        
+
       - name: Print Info
         run: echo "Deployed to site dragon3dgraff.ru/public_html/KnowItAll"
