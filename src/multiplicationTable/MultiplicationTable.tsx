@@ -84,11 +84,11 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setFinished(true);
     try {
       const response = await fetch(
-        "https://tertiusaxis.ru/api/check/checkAuth",
+        "https://tertiusaxis.ru/api/knowitall/resuts",
         {
           method: "POST",
-          body: JSON.stringify({id: 1, results, timer})
-        },
+          body: JSON.stringify({ id: 1, results, timer }),
+        }
       );
       console.log(response);
     } catch (error) {
