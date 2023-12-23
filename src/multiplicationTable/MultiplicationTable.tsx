@@ -78,10 +78,22 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     });
   };
 
-  const onFinished = () => {
+  const onFinished = async () => {
     clearInterval(interval);
     setIntervalNumber(undefined);
     setFinished(true);
+    try {
+      const response = await fetch(
+        "https://tertiusaxis.ru/api/check/checkAuth",
+        {
+          method: "POST",
+          body: JSON.stringify({id: 1, results, timer})
+        },
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getTimerColor = (timer: number) => {
@@ -149,19 +161,6 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   useEffect(() => {
     localStorage.setItem("selectedNumbers", JSON.stringify(selectedNumbers));
   }, [selectedNumbers]);
-
-  useEffect(() => {
-    const getServer = async () => {
-      const response = await fetch(
-        "https://tertiusaxis.ru//api/check/checkAuth",
-        {
-          method: "POST",
-        }
-      );
-      console.log(response);
-    };
-    getServer();
-  }, []);
 
   const areAllSelected = () => {
     const selected = Object.values(selectedNumbers).filter(Boolean);
