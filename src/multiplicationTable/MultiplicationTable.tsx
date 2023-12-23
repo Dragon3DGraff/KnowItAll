@@ -152,12 +152,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   useEffect(() => {
     const getServer = async () => {
-      const response = await fetch(
-        "public_html/KnowItAll/api/check/checkAuth",
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch("/api/check/checkAuth", {
+        method: "POST",
+      });
       console.log(response);
     };
     getServer();
@@ -309,7 +306,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Box>
       )}
       <Stack maxWidth={"400px"} mt={2}>
-        <img src="public_html/nez.png" />
+        <img src="public_html/client/nez.png" />
       </Stack>
     </Stack>
   );
