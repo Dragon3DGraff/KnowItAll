@@ -6,7 +6,7 @@ import { getTable } from "./calc/getMultiplicationTable";
 function App() {
   return (
     <>
-      <Stack maxWidth="sm">
+      <Stack maxWidth="700px">
         <Typography variant="h2" color={"maroon"}>
           Всезнайка
         </Typography>

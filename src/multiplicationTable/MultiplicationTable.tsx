@@ -178,7 +178,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   };
 
   return (
-    <Stack>
+    <Stack alignItems={"center"}>
       <Typography variant="h4">Таблица умножения</Typography>
       <Box
         sx={{
@@ -223,7 +223,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
                 Выбери на что будем делить и умножать
               </Typography>
             </FormLabel>
-            <Stack direction={"row"}>
+            <Box alignSelf={"center"}>
               <FormGroup key={"all"}>
                 <FormControlLabel
                   checked={areAllSelected()}
@@ -231,6 +231,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
                   label="Все"
                 />
               </FormGroup>
+            </Box>
+            <Stack direction={"row"} flexWrap={"wrap"} alignItems={"center"}>
               {numbers.map((number) => (
                 <FormGroup key={number}>
                   <FormControlLabel
@@ -294,11 +296,21 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Stack>
       ) : (
         <Box my={2}>
-          <Button variant="contained" size="large" onClick={onStart}>
+          <Button
+            variant="contained"
+            size="large"
+            disabled={
+              Object.values(selectedNumbers).filter(Boolean).length === 0
+            }
+            onClick={onStart}
+          >
             Начали!
           </Button>
         </Box>
       )}
+      <Stack maxWidth={"400px"} mt={2}>
+        <img src="src\assets\nez.png" />
+      </Stack>
     </Stack>
   );
 };
