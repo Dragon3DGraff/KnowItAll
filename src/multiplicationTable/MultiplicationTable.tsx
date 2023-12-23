@@ -87,6 +87,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         "https://tertiusaxis.ru/api/knowitall/resuts",
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ id: 1, results, timer }),
         }
       );
