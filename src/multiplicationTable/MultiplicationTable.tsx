@@ -25,6 +25,7 @@ import TagFacesIcon from "@mui/icons-material/TagFaces";
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 import MoodBadIcon from "@mui/icons-material/MoodBad";
+import { SELECTED_NUMBERS, USER_NAME_KEY } from "../utils/constants";
 
 type Props = {
   table: MultiplicationTable;
@@ -32,7 +33,7 @@ type Props = {
 export const MultiplicationTableSolve = ({ table }: Props) => {
   const [selectedNumbers, setSelectedNumbers] = useState<
     Record<number, boolean>
-  >(StorageHelper.get("selectedNumbers") ?? {});
+  >(StorageHelper.get(SELECTED_NUMBERS) ?? {});
 
   const [results, setResults] = useState<Solution[]>([]);
   const [started, setStarted] = useState<boolean>(false);
@@ -83,6 +84,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setIntervalNumber(undefined);
     setFinished(true);
     try {
+      const name = StorageHelper.get(USER_NAME_KEY) ?? "anonim";
       const response = await fetch(
         "https://tertiusaxis.ru/api/knowitall/resuts",
         {
@@ -90,7 +92,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ id: 1, results, timer }),
+          body: JSON.stringify({ id: 1, results, timer, name }),
         }
       );
       console.log(response);
@@ -162,7 +164,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   };
 
   useEffect(() => {
-    localStorage.setItem("selectedNumbers", JSON.stringify(selectedNumbers));
+    StorageHelper.save(SELECTED_NUMBERS, JSON.stringify(selectedNumbers));
   }, [selectedNumbers]);
 
   const areAllSelected = () => {

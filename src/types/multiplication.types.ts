@@ -13,7 +13,7 @@ export type TableItem = {
   number2: number;
   actionSign: Sign;
   answer: number;
-  id: string
+  id: string;
 };
 
 export type MultiplicationTable = {

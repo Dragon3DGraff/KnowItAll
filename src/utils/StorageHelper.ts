@@ -5,7 +5,15 @@ export class StorageHelper {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.log("Не удалось записать в сторедж");
+      console.log(`Не удалось записать ${key} в сторедж`);
+    }
+  }
+
+  public static delete(key: string) {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.log(`Не удалось удалить ${key}`);
     }
   }
 
