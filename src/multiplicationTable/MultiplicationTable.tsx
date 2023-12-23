@@ -152,9 +152,12 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   useEffect(() => {
     const getServer = async () => {
-      const response = await fetch("/api/check/checkAuth", {
-        method: "POST",
-      });
+      const response = await fetch(
+        "https://tertiusaxis.ru//api/check/checkAuth",
+        {
+          method: "POST",
+        }
+      );
       console.log(response);
     };
     getServer();
@@ -306,7 +309,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Box>
       )}
       <Stack maxWidth={"400px"} mt={2}>
-        <img src="./site/client/nez.png" />
+        <img src="./nez.png" />
       </Stack>
     </Stack>
   );

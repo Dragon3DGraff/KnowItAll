@@ -1,7 +1,7 @@
 name: Deploy to server
 
 env:
-  DEPLOY_PATH: ixiaolong.ru/site/client
+  DEPLOY_PATH: dragon3dgraff.ru/public_html/KnowItAll
   BUILD_SCRIPT_OUTPUT: dist
 
 on:
@@ -40,4 +40,4 @@ jobs:
           strip_components: 1
 
       - name: Print Info
-        run: echo "Deployed to http://ixiaolong.ru/site/client"
+        run: echo "Deployed to dragon3dgraff.ru/public_html/KnowItAll"
