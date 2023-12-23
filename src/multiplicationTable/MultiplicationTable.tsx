@@ -306,7 +306,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Box>
       )}
       <Stack maxWidth={"400px"} mt={2}>
-        <img src="./nez.png" />
+        <img src="./site/client/nez.png" />
       </Stack>
     </Stack>
   );
