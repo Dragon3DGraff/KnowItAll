@@ -22,9 +22,8 @@ function App() {
     setSavedUserName(userName);
   };
   const onDeleteName = () => {
-     setSavedUserName('');
-     StorageHelper.delete(USER_NAME_KEY);
-
+    setSavedUserName("");
+    StorageHelper.delete(USER_NAME_KEY);
   };
 
   return (
