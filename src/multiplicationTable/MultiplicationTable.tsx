@@ -32,7 +32,7 @@ type Props = {
 };
 export const MultiplicationTableSolve = ({ table }: Props) => {
   const [selectedNumbers, setSelectedNumbers] = useState<
-    Record<number, boolean>
+    Record<string, boolean>
   >(StorageHelper.get(SELECTED_NUMBERS) ?? {});
 
   const [results, setResults] = useState<Solution[]>([]);
@@ -64,10 +64,13 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const handleCheckNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setSelectedNumbers({
+    const newSelectedNumbers = {
       ...selectedNumbers,
-      [event.target.name]: event.target.checked,
-    });
+      [`${event.target.name}`]: event.target.checked,
+    };
+
+    setSelectedNumbers(newSelectedNumbers);
+    StorageHelper.save(SELECTED_NUMBERS, newSelectedNumbers);
   };
 
   const onSolve = (result: Solution) => {
@@ -85,17 +88,25 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setFinished(true);
     try {
       const name = StorageHelper.get(USER_NAME_KEY) ?? "anonim";
-      const response = await fetch(
-        "https://tertiusaxis.ru/api/knowitall/resuts",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: 1, results, timer, name }),
-        }
-      );
-      console.log(response);
+      await fetch("https://tertiusaxis.ru/api/knowitall/resuts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: 1,
+          timer,
+          name,
+          results: results.map(
+            ({ userAnswer, result, actionSign, number2 }) => ({
+              userAnswer,
+              result,
+              actionSign,
+              number2,
+            })
+          ),
+        }),
+      });
     } catch (error) {
       console.log(error);
     }
@@ -161,11 +172,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
       newSelectedNumbers[num] = numbers.length !== selected.length;
     });
     setSelectedNumbers(newSelectedNumbers);
+    StorageHelper.save(SELECTED_NUMBERS, newSelectedNumbers);
   };
-
-  useEffect(() => {
-    StorageHelper.save(SELECTED_NUMBERS, JSON.stringify(selectedNumbers));
-  }, [selectedNumbers]);
 
   const areAllSelected = () => {
     const selected = Object.values(selectedNumbers).filter(Boolean);
@@ -180,6 +188,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setTask([]);
     setStarted(false);
   };
+
+  console.log(selectedNumbers);
 
   return (
     <Stack alignItems={"center"}>
@@ -240,9 +250,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               {numbers.map((number) => (
                 <FormGroup key={number}>
                   <FormControlLabel
-                    checked={Boolean(selectedNumbers[number])}
                     control={
                       <Checkbox
+                        checked={Boolean(selectedNumbers[`${number}`])}
                         onChange={handleCheckNumberChange}
                         name={`${number}`}
                       />
