@@ -97,14 +97,15 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           id: 1,
           timer,
           name,
-          results: results.map(
-            ({ userAnswer, result, actionSign, number2 }) => ({
-              userAnswer,
-              result,
-              actionSign,
-              number2,
-            })
-          ),
+          results,
+          // : results.map(
+          //   ({ userAnswer, result, actionSign, number2 }) => ({
+          //     userAnswer,
+          //     result,
+          //     actionSign,
+          //     number2,
+          //   })
+          // ),
         }),
       });
     } catch (error) {
