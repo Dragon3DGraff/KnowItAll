@@ -18,10 +18,13 @@ function App() {
     setUserName(e.target.value);
   };
   const onSaveClick = () => {
-    StorageHelper.save(USER_NAME_KEY, userName);
-    setSavedUserName(userName);
+    if (userName) {
+      StorageHelper.save(USER_NAME_KEY, userName);
+      setSavedUserName(userName);
+    }
   };
   const onDeleteName = () => {
+    setUserName("");
     setSavedUserName("");
     StorageHelper.delete(USER_NAME_KEY);
   };

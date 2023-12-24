@@ -232,38 +232,41 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Stack>
 
         {!started && (
-          <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-            <FormLabel component="legend">
-              <Typography variant="h6">
-                Выбери на что будем делить и умножать
-              </Typography>
-            </FormLabel>
-            <Box alignSelf={"center"}>
-              <FormGroup key={"all"}>
-                <FormControlLabel
-                  checked={areAllSelected()}
-                  control={<Checkbox onChange={selectAllNumbers} name="all" />}
-                  label="Все"
-                />
-              </FormGroup>
-            </Box>
-            <Stack direction={"row"} flexWrap={"wrap"} alignItems={"center"}>
-              {numbers.map((number) => (
-                <FormGroup key={number}>
+          <Stack>
+            <Typography variant="h6">
+              Выбери на что будем делить и умножать
+            </Typography>
+            <FormControl sx={{ my: 1 }} component="fieldset" variant="standard">
+              <FormLabel component="legend"></FormLabel>
+              <Box alignSelf={"center"}>
+                <FormGroup key={"all"}>
                   <FormControlLabel
+                    checked={areAllSelected()}
                     control={
-                      <Checkbox
-                        checked={Boolean(selectedNumbers[`${number}`])}
-                        onChange={handleCheckNumberChange}
-                        name={`${number}`}
-                      />
+                      <Checkbox onChange={selectAllNumbers} name="all" />
                     }
-                    label={number}
+                    label="Все"
                   />
                 </FormGroup>
-              ))}
-            </Stack>
-          </FormControl>
+              </Box>
+              <Stack direction={"row"} flexWrap={"wrap"} alignItems={"center"}>
+                {numbers.map((number) => (
+                  <FormGroup key={number}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={Boolean(selectedNumbers[`${number}`])}
+                          onChange={handleCheckNumberChange}
+                          name={`${number}`}
+                        />
+                      }
+                      label={number}
+                    />
+                  </FormGroup>
+                ))}
+              </Stack>
+            </FormControl>
+          </Stack>
         )}
       </Box>
       {started ? (
