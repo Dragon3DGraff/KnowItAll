@@ -103,7 +103,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   };
 
   const onTimerFinished = (timer: number) => {
-    user?.userName && sendResults(timer, results, user?.userName);
+    user?.userName && sendResults(timer, results);
   };
 
   const areAllSelected = () => {

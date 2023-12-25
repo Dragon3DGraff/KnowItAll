@@ -1,7 +1,7 @@
 import { Result } from "../types/multiplication.types";
 import { API_URL } from "../utils/constants";
 
-export const sendResults = async (timer: number, results: Result[], userName: string) => {
+export const sendResults = async (timer: number, results: Result[]) => {
   try {
     await fetch(API_URL + "api/knowitall/resuts", {
       method: "POST",
@@ -9,9 +9,7 @@ export const sendResults = async (timer: number, results: Result[], userName: st
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: 1,
         timer,
-        userName,
         results,
       }),
     });
