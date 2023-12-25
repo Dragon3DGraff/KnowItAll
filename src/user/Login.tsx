@@ -36,6 +36,11 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
+  const onPasswordChange = (e: { target: { value: string } }) => {
+    setForm((prev) => ({ ...prev, password: e.target.value }));
+    setErrors((prev) => ({ ...prev, ["password"]: "" }));
+  };
+
   const onSubmit = async () => {
     const res = await login(form);
     if (res.ok) {
@@ -68,8 +73,7 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
             <Typography minWidth={"100px"}>Пароль</Typography>
             <TextField
               size="small"
-              onChange={onInputChange}
-              name={"password"}
+              onChange={onPasswordChange}
               type="password"
               error={Boolean(errors.password)}
               helperText={errors.password}
