@@ -1,15 +1,24 @@
-import { Box, Input, Stack, Tooltip, Typography } from "@mui/material";
-import { Sign, Solution } from "../types/multiplication.types";
+import { Box, Input, Stack, Tooltip, Typography, styled } from "@mui/material";
+import { Sign, Result } from "../types/multiplication.types";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { useState } from "react";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+
+const StyledInput = styled(Input)(() => ({
+  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+    display: "none",
+  },
+  "& input[type=number]": {
+    MozAppearance: "textfield",
+  },
+}));
 
 type Props = {
   id: string;
   number1: number;
   number2: number;
   actionSign: Sign;
-  onSolve?: (result: Solution) => void;
+  onSolve?: (result: Result) => void;
   answer: number;
   tabIndex: number;
   userAnswer?: number;
@@ -65,7 +74,7 @@ export const Equation = ({
             {inputValue}
           </Typography>
         ) : (
-          <Input
+          <StyledInput
             size="small"
             type="number"
             inputProps={{ min: 0, max: 100 }}

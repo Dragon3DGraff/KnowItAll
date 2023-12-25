@@ -3,7 +3,7 @@ export enum Sign {
   multiplication = "x",
 }
 
-export type Solution = TableItem & {
+export type Result = TableItem & {
   userAnswer: number | undefined;
   result: boolean;
 };
