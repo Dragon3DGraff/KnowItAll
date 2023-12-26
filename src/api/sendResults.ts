@@ -7,6 +7,7 @@ export const sendResults = async (timer: number, results: Result[]) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        credentials: "include",
       },
       body: JSON.stringify({
         timer,
