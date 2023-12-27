@@ -193,7 +193,7 @@ router.post("/checkAuth", async (req, res) => {
       res.clearCookie("token");
       return res.status(400).json({ message: "User not found" });
     }
-    res.status(200).json({ userId, userName: user.name });
+    res.status(200).json({ userId, userName: user.userName });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
     console.log(error);

@@ -4,6 +4,7 @@ import { UserContext } from "../App";
 import { Registration } from "./Registration";
 import { Login } from "./Login";
 import { Statistics } from "./Statistics";
+import { logout } from "../api/logout";
 
 type Props = {
   onNameChanged: (userName?: string) => void;
@@ -15,7 +16,7 @@ export const UserName = ({ onNameChanged }: Props) => {
   const user = useContext(UserContext);
 
   const onDeleteName = async () => {
-    // await logout() //TODO
+    await logout()
     onNameChanged(undefined);
   };
 
