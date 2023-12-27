@@ -3,7 +3,7 @@ import { API_URL } from "../utils/constants";
 
 export const register = async (data: RegisterData) => {
   try {
-    const res = await fetch(API_URL + "api/knowitall/register", {
+    const res = await fetch(API_URL + "api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -2,7 +2,7 @@ import { API_URL } from "../utils/constants";
 
 export const checkIsAuth = async () => {
   try {
-    const res = await fetch(API_URL + "api/knowitall/checkAuth", {
+    const res = await fetch(API_URL + "api/auth/checkAuth", {
       method: "POST",
       credentials: "include",
     });

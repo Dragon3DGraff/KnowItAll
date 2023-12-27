@@ -1,8 +1,10 @@
 name: Deploy to server
 
 env:
-  DEPLOY_PATH: dragon3dgraff.ru/public_html/KnowItAll
-  BUILD_SCRIPT_OUTPUT: dist
+  DEPLOY_SERVER_PATH: knowitall/site
+  BUILD_SERVER_OUTPUT: server
+  DEPLOY_CLIENT_PATH: knowitall/site/client
+  BUILD_CLIENT_OUTPUT: client/dist
 
 on:
   push:
@@ -23,21 +25,32 @@ jobs:
         run: echo "name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g' | sed 's/\./_/g')" >> $GITHUB_ENV
       # Устанавливаем зависимости для сборки
       - name: Install Dependencies
-        run: npm i
+        run: npm run install-all
       # Собираем приложение
       - name: Build Application
         run: npm run build
 
-      - name: Deploy to Server
+      - name: Deploy Server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
-          source: ${{ env.BUILD_SCRIPT_OUTPUT }}
-          target: ${{ env.DEPLOY_PATH }}
+          source: ${{ env.BUILD_SERVER_OUTPUT }}
+          target: ${{ env.DEPLOY_SERVER_PATH }}
+          rm: true
+          strip_components: 1
+
+      - name: Deploy client
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
+          key: ${{ secrets.DEPLOY_SERVER_KEY }}
+          source: ${{ env.BUILD_CLIENT_OUTPUT }}
+          target: ${{ env.DEPLOY_CLIENT_PATH }}
           rm: true
           strip_components: 1
 
       - name: Print Info
-        run: echo "Deployed to dragon3dgraff.ru/public_html/KnowItAll"
+        run: echo "Deployed to knowitall"
