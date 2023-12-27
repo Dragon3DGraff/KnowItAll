@@ -17,7 +17,7 @@ app.use(
 const db = require("./models");
 
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV !== "production") {
+  // if (process.env.NODE_ENV !== "production") {
     res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
 
     res.header("Access-Control-Allow-Credentials", true);
@@ -25,7 +25,7 @@ app.use((req, res, next) => {
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept, Authorization, credentials"
     );
-  }
+  // }
   next();
 });
 
@@ -37,10 +37,10 @@ app.use("/api/data", require("./routes/results.routes"));
 const PORT = config.get("port");
 
 if (process.env.NODE_ENV === "production") {
-  app.use("/", express.static(path.join(__dirname, "client")));
+  app.use("/", express.static(path.join(__dirname, "client", "dist")));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "index.html"));
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
   });
 }
 
