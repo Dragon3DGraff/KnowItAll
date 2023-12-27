@@ -2,13 +2,21 @@ const config = require("config");
 const Sequelize = require("sequelize");
 
 const dbPassword =
-  process.env.NODE_ENV === "production" ? config.PASSWORD : config.EXT_PASSWORD;
-const host = process.env.NODE_ENV === "production" ? "localhost" : config.HOST;
-const sequelize = new Sequelize(config.DB, config.USER, dbPassword, {
-  host: host,
-  port: config.PORT,
-  dialect: config.dialect,
-});
+  process.env.NODE_ENV !== "production"
+    ? config.get("EXT_PASSWORD")
+    : config.get("PASSWORD");
+const host =
+  process.env.NODE_ENV === "production" ? "localhost" : config.get("HOST");
+const sequelize = new Sequelize(
+  config.get("DB"),
+  config.get("USER"),
+  dbPassword,
+  {
+    host: host,
+    // port: config.get("port"),
+    dialect: config.get("dialect"),
+  }
+);
 
 const db = {};
 

@@ -3,7 +3,7 @@ import { API_URL } from "../utils/constants";
 
 export const sendResults = async (timer: number, results: Result[]) => {
   try {
-    await fetch(API_URL + "api/data/resuts", {
+    await fetch(API_URL + "api/data/results", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -12,6 +12,7 @@ export const sendResults = async (timer: number, results: Result[]) => {
       body: JSON.stringify({
         timer,
         results,
+        mode: "exam", //TODO хардкод!!!
       }),
     });
   } catch (error) {
