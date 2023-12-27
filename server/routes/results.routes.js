@@ -9,6 +9,7 @@ const { check, validationResult } = require("express-validator");
 
 const db = require("../models");
 const Results = db.Results;
+const Users = db.Users;
 
 router.post(
   "/resuts",
@@ -36,13 +37,12 @@ router.post(
       }
       const userId = decoded.userId;
 
-      const user = await Users.findOne({ _id: userId });
+      const user = await Users.findByPk(userId);
       if (!user) {
         res.clearCookie("token");
         return res.status(400).json({ message: "User not found" });
       }
 
-      await Results.sync();
       await Results.create({
         ...req.body,
         userId: user.id,

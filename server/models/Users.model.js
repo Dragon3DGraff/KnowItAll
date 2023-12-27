@@ -24,6 +24,10 @@ module.exports = (sequelize, Sequelize) => {
     registered: {
       type: Sequelize.DATE,
     },
+    role: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   });
   return Users;
 };
