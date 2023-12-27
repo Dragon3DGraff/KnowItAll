@@ -3,7 +3,7 @@ import { API_URL } from "../utils/constants";
 
 export const sendResults = async (timer: number, results: Result[]) => {
   try {
-    await fetch(API_URL + "api/knowitall/resuts", {
+    await fetch(API_URL + "api/data/resuts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

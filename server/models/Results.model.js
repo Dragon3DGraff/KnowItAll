@@ -1,29 +1,27 @@
 module.exports = (sequelize, Sequelize) => {
-  const KnowItAllUsers = sequelize.define("students", {
+  const Results = sequelize.define("multiplation", {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
     },
-    userName: {
+    userId: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    birthdate: {
-      type: Sequelize.STRING,
-    },
-    login: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    registered: {
+    date: {
       type: Sequelize.DATE,
     },
+    timer: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+
+    results: {
+      type: Sequelize.JSON,
+      allowNull: false,
+    },
   });
-  return KnowItAllUsers;
+  return Results;
 };

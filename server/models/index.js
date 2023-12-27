@@ -15,10 +15,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.KnowItAllUser = require("./KnowItAllUsers.model.js")(sequelize, Sequelize);
-db.KnowItAllResults = require("./KnowItAllResults.model.js")(
-  sequelize,
-  Sequelize
-);
+db.Users = require("./Users.model.js")(sequelize, Sequelize);
+db.Results = require("./Results.model.js")(sequelize, Sequelize);
 
 module.exports = db;

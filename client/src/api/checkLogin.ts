@@ -2,7 +2,7 @@ import { API_URL } from "../utils/constants";
 
 export const checkLogin = async (login: string) => {
   try {
-    const res = await fetch(API_URL + "api/knowitall/checkLogin", {
+    const res = await fetch(API_URL + "api/auth/checkLogin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

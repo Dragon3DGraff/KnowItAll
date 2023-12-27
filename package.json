@@ -6,7 +6,7 @@
   "scripts": {
     "install-all": "npm i && cd ./server && npm i && cd .. && cd ./client && npm i",
     "build": "cd ./client && npm run build",
-    "start": "concurrently --names \"BACK,FRONT\" -c \"bgBlue.bold,bgMagenta.bold\" \"cd ./client && npm run dev\" \"cd ./server && npm run server\""
+    "start": "concurrently --names \"FRONT,BACK\" -c \"bgBlue.bold,bgGreen.bold\" \"cd ./client && npm run dev\" \"cd ./server && npm run server\""
   },
   "repository": {
     "type": "git",
