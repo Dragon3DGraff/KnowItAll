@@ -9,41 +9,10 @@ const { check, validationResult } = require("express-validator");
 const db = require("../models");
 const Users = db.Users;
 
-router.get("/students", async (req, res) => {
-  try {
-    fs.appendFile("message.txt", "data to append", function (err) {
-      if (err) throw err;
-      console.log("Saved!");
-    });
-    // 		const token = req.cookies.token;
-    // 		if (!token) {
-    // 			return res.status(401).json({ message: 'No authorization' })
-    // 		}
-
-    // 		const decoded = jwt.verify(token, config.get('jwtSecret'));
-    // 		if(!decoded.userId){
-    // 			res.clearCookie('token');
-    // 			return res.status(400).json({message: 'User not found'});
-    // 		}
-    // 		const userId = decoded.userId;
-
-    // 		const user = await User.findOne({_id: userId});
-
-    // 		if(!user){
-    // 			res.clearCookie('token');
-    // 			return res.status(400).json({message: 'User not found'});
-    // 		}
-    res.status(200).json({ userId: 1, userName: "Матвей" });
-  } catch (error) {
-    res.status(500).json({ message: "ERROR" });
-    console.log(error);
-  }
-});
-
 router.post("/checkLogin", async (req, res) => {
   try {
     const { login } = req.body;
-    await Users.sync();
+
     const candidate = await Users.findOne({
       where: { login: login },
     });
@@ -77,7 +46,7 @@ router.post(
       }
 
       const { login, password } = req.body;
-      await Users.sync();
+
       const candidate = await Users.findOne({
         where: { login: login },
       });
@@ -90,11 +59,11 @@ router.post(
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
-
       const data = await Users.create({
         ...req.body,
         password: hashedPassword,
         registered: new Date(),
+        role: "student",
       });
       if (data) {
         res
@@ -187,7 +156,7 @@ router.post("/checkAuth", async (req, res) => {
     }
     const userId = decoded.userId;
 
-    const user = await Users.findOne({ _id: userId });
+    const user = await Users.findByPk(userId);
 
     if (!user) {
       res.clearCookie("token");

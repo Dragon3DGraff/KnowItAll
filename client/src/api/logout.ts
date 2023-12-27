@@ -6,7 +6,6 @@ export const logout = async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        credentials: "include",
       },
     });
   } catch (error) {
