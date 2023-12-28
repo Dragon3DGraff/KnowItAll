@@ -47,7 +47,7 @@ export const AuthMenu = ({ onLoginOpen, onRegistrationOpen }: Props) => {
         }}
       >
         <MenuItem onClick={onLoginOpenHandler}>
-          У меня есть логин и пароль
+          Есть логин и пароль
         </MenuItem>
         <MenuItem onClick={onRegistrationOpenHandler}>
           Зарегистрироваться

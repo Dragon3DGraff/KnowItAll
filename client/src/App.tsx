@@ -18,11 +18,10 @@ function App() {
 
   return (
     <UserContext.Provider value={{ userName }}>
-      <Stack>
+      <Stack minHeight={"100vh"}>
         <Header onNameChanged={onNameChanged} />
         <Stack
           maxWidth="700px"
-          // minHeight={"100vh"}
           p={0}
           my={0}
           mx={"auto"}
@@ -30,8 +29,7 @@ function App() {
           flexGrow={2}
         >
           <Typography variant="h3" color={"maroon"}>
-            <span style={{ color: "#00FFFF" }}>&#10052;</span> Всезнайка
-            <span style={{ color: "#00FFFF" }}>&#10052;</span>
+            Всезнайка
           </Typography>
           <MultiplicationTableSolve table={getTable()} />
           <Author />
