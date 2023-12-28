@@ -89,6 +89,7 @@ export const Registration = ({
       password: "",
     });
     onClose();
+    setIsRegistered(false);
   };
 
   const onBlur = async (e: { target: { value: string } }) => {
