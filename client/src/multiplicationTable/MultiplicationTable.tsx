@@ -42,6 +42,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [task, setTask] = useState<TableItem[]>([]);
   const user = useContext(UserContext);
   const [mode, setMode] = useState<Mode>(Mode.EXAM);
+  const [isSended, setIsSended] = useState<boolean>(false);
 
   const handleCheckNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -105,8 +106,11 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setStarted(false);
   };
 
-  const onTimerFinished = (timer: number) => {
-    user?.userName && sendResults(timer, results, mode);
+  const onTimerFinished = async (timer: number) => {
+    if (user?.userName) {
+      await sendResults(timer, results, mode);
+      setIsSended(true);
+    }
   };
 
   const onModeChange = () => {
@@ -247,7 +251,12 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               ))}
           {allFilled && (
             <Box my={1}>
-              <Button variant="contained" size="large" onClick={onFinished}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={onFinished}
+                disabled={isSended}
+              >
                 Готово!
               </Button>
             </Box>
