@@ -7,13 +7,15 @@ import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDiss
 import MoodBadIcon from "@mui/icons-material/MoodBad";
 import { createPortal } from "react-dom";
 import { TIMER_STEPS } from "../utils/constants";
+import { Mode } from "../types/multiplication.types";
 
 type Props = {
   started: boolean;
   finished: boolean;
   onFinish: (timer: number) => void;
+  mode: Mode;
 };
-export const Timer = ({ started, finished, onFinish }: Props) => {
+export const Timer = ({ started, finished, mode, onFinish }: Props) => {
   const [timer, setTimer] = useState<number>(0);
   const [interval, setIntervalNumber] = useState<NodeJS.Timeout>();
 
@@ -85,10 +87,18 @@ export const Timer = ({ started, finished, onFinish }: Props) => {
       left={0}
       m={2}
     >
-      <Box mr={1}>{getTimerSmile(timer)}</Box>
-      <Typography variant="h5" color={getTimerColor(timer)}>
-        {secondsToMin(timer)}
-      </Typography>{" "}
+      {mode === Mode.EXAM ? (
+        <>
+          <Box mr={1}>{getTimerSmile(timer)}</Box>
+          <Typography variant="h5" color={getTimerColor(timer)}>
+            {secondsToMin(timer)}
+          </Typography>
+        </>
+      ) : (
+        <Typography variant="h5" color={"lightgray"}>
+          {secondsToMin(0)}
+        </Typography>
+      )}
     </Stack>,
     document.body
   );

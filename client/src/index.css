@@ -7,11 +7,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   margin: 0;
+  padding: 0;
   display: flex;
   min-width: 320px;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   background-color: #fafafa;
 }
 

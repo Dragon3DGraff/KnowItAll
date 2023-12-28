@@ -12,6 +12,7 @@ import { useState } from "react";
 import { LoginData } from "../types/api.types";
 
 import { login } from "../api/login";
+import { Hourglass } from "react-loader-spinner";
 
 type Props = {
   open: boolean;
@@ -29,6 +30,9 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
     password: "",
   });
 
+  const [error, setError] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>();
+
   const onInputChange = (e: { target: { name: string; value: string } }) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -41,14 +45,31 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
     setErrors((prev) => ({ ...prev, ["password"]: "" }));
   };
 
+  const onCloseHandler = () => {
+    setErrors({
+      login: "",
+      password: "",
+    });
+    setForm({
+      login: "",
+      password: "",
+    });
+    setError("");
+    onClose();
+  };
+
   const onSubmit = async () => {
+    setIsLoading(true);
     const res = await login(form);
+    setIsLoading(false);
+
     if (res.ok) {
       onLogin(res.userName);
-      onClose();
+      onCloseHandler();
     } else {
       const errors = res.errors?.errors;
       errors && setErrors((prev) => ({ ...prev, ...errors }));
+      setError("Ой, что-то пошло не так...");
     }
   };
 
@@ -57,8 +78,25 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
   const isButtonDisabled = !isFIlled;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md">
-      <DialogTitle>Регистрация</DialogTitle>
+    <Dialog open={open} onClose={onCloseHandler} maxWidth="md">
+      <DialogTitle>
+        <Stack direction={"row"} alignItems={"center"}>
+          Вход
+          {isLoading && (
+            <Hourglass
+              visible={true}
+              height="20"
+              width="20"
+              ariaLabel="hourglass-loading"
+              wrapperStyle={{ margin: "auto" }}
+              wrapperClass=""
+              colors={["#306cce", "#72a1ed"]}
+            />
+          )}
+        </Stack>
+        {error && <Typography color={"red"}>{error}</Typography>}
+      </DialogTitle>
+
       <DialogContent>
         <form id="registration">
           <Stack gap={1}>
@@ -82,7 +120,11 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} sx={{ fontSize: "11px" }} color="secondary">
+        <Button
+          onClick={onCloseHandler}
+          sx={{ fontSize: "11px" }}
+          color="secondary"
+        >
           Отмена
         </Button>
         {

@@ -1,9 +1,13 @@
-import { Result } from "../types/multiplication.types";
+import { Mode, Result } from "../types/multiplication.types";
 import { API_URL } from "../utils/constants";
 
-export const sendResults = async (timer: number, results: Result[]) => {
+export const sendResults = async (
+  timer: number,
+  results: Result[],
+  mode: Mode
+) => {
   try {
-    await fetch(API_URL + "api/data/resuts", {
+    await fetch(API_URL + "api/data/results", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -12,6 +16,7 @@ export const sendResults = async (timer: number, results: Result[]) => {
       body: JSON.stringify({
         timer,
         results,
+        mode,
       }),
     });
   } catch (error) {

@@ -20,3 +20,8 @@ export type MultiplicationTable = {
   [Sign.multiplication]: Record<number, TableItem[]>;
   [Sign.division]: Record<number, TableItem[]>;
 };
+
+export enum Mode {
+  EXAM = "exam",
+  TRAIN = "train",
+}

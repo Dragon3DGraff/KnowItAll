@@ -17,9 +17,29 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-
+    mode: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     results: {
       type: Sequelize.JSON,
+      allowNull: false,
+    },
+
+    correctCount: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    incorrectCount: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    solvedCount: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    numbers: {
+      type: Sequelize.STRING,
       allowNull: false,
     },
   });

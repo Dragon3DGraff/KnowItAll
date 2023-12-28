@@ -6,8 +6,8 @@ export const checkIsAuth = async () => {
       method: "POST",
       credentials: "include",
     });
-    if (res.status === 200) {
-      const answer = await res.json();
+    const answer = await res.json();
+    if (res.status === 200 && answer.userName) {
       return { ok: true, userName: answer.userName };
     }
     return { ok: false };

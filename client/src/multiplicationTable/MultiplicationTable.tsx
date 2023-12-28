@@ -9,6 +9,7 @@ import {
   FormGroup,
   FormLabel,
   Stack,
+  Switch,
   Typography,
 } from "@mui/material";
 import { Equation } from "./Equation";
@@ -17,6 +18,7 @@ import {
   Sign,
   Result,
   TableItem,
+  Mode,
 } from "../types/multiplication.types";
 import { arrayShuffle } from "../utils/arrayShuffle";
 import { StorageHelper } from "../utils/StorageHelper";
@@ -39,6 +41,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [finished, setFinished] = useState<boolean>(false);
   const [task, setTask] = useState<TableItem[]>([]);
   const user = useContext(UserContext);
+  const [mode, setMode] = useState<Mode>(Mode.EXAM);
 
   const handleCheckNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -103,7 +106,11 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   };
 
   const onTimerFinished = (timer: number) => {
-    user?.userName && sendResults(timer, results);
+    user?.userName && sendResults(timer, results, mode);
+  };
+
+  const onModeChange = () => {
+    setMode((prev) => (prev === Mode.EXAM ? Mode.TRAIN : Mode.EXAM));
   };
 
   const areAllSelected = () => {
@@ -118,6 +125,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         started={started}
         finished={finished}
         onFinish={onTimerFinished}
+        mode={mode}
       />
 
       <Box
@@ -156,8 +164,30 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
             </Typography>
             <FormControl sx={{ my: 1 }} component="fieldset" variant="standard">
               <FormLabel component="legend"></FormLabel>
-              <Box alignSelf={"center"}>
+              <Box alignSelf={"center"} width={"250px"}>
                 <FormGroup key={"all"}>
+                  <Stack direction={"row"} gap={2}>
+                    {/* {mode === Mode.EXAM ? (
+                      <Box width={"40px"} height={"40px"}>
+                        <img src="./super.png" />
+                      </Box>
+                    ) : (
+                      <Box width={"40px"} height={"40px"}>
+                        <img src="./itak.png" />
+                      </Box>
+                    )} */}
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={mode === Mode.EXAM}
+                          onChange={onModeChange}
+                        />
+                      }
+                      label={
+                        mode === Mode.EXAM ? "Таймер включён " : "Без таймера"
+                      }
+                    />
+                  </Stack>
                   <FormControlLabel
                     checked={areAllSelected()}
                     control={
