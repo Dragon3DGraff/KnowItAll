@@ -1,10 +1,10 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
 import { Registration } from "./Registration";
 import { Login } from "./Login";
-import { Statistics } from "./Statistics";
 import { logout } from "../api/logout";
+import { AuthMenu } from "./AuthMenu";
 
 type Props = {
   onNameChanged: (userName?: string) => void;
@@ -12,11 +12,10 @@ type Props = {
 export const UserName = ({ onNameChanged }: Props) => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [statisticsTitle, setStatisticsTitle] = useState("");
   const user = useContext(UserContext);
 
   const onDeleteName = async () => {
-    await logout()
+    await logout();
     onNameChanged(undefined);
   };
 
@@ -37,57 +36,42 @@ export const UserName = ({ onNameChanged }: Props) => {
   };
 
   return (
-    <Stack position={"absolute"} right={30} top={5} mb={1}>
-      <Stack
-        direction={"row"}
-        alignItems={"self-start"}
-        justifyContent={"center"}
-      >
-        {user?.userName ? (
-          <Stack direction={"row"} alignItems={"center"}>
+    <>
+      {user?.userName ? (
+        <Box pr={2}>
+          <Box>
             <Typography color={"green"} variant="h6">
               Привет, {user?.userName}!
             </Typography>
-            <Box ml={3}>
-              <Button
-                variant="text"
-                size="small"
-                sx={{ fontSize: "11px" }}
-                onClick={onDeleteName}
-              >
-                Выйти
-              </Button>
-            </Box>
-          </Stack>
-        ) : (
-          <Stack direction={"row"}>
-            <Button onClick={onLoginOpen}>Войти</Button>
-            <Button onClick={() => setIsRegistrationOpen(true)}>
-              Регистрация
+          </Box>
+
+          <Box ml={3}>
+            <Button
+              variant="text"
+              size="small"
+              sx={{ fontSize: "10px", p: 0 }}
+              onClick={onDeleteName}
+            >
+              Выйти
             </Button>
-          </Stack>
-        )}
-      </Stack>
+          </Box>
+        </Box>
+      ) : (
+        <Box px={2}>
+          <AuthMenu
+            onLoginOpen={onLoginOpen}
+            onRegistrationOpen={() => setIsRegistrationOpen(true)}
+          />
+        </Box>
+      )}
+
       <Registration
         open={isRegistrationOpen}
         onClose={onRegistrationClose}
         onLogin={onLogin}
+        onLoginError={onLoginOpen}
       />
       <Login open={isLoginOpen} onClose={onLoginClose} onLogin={onLogin} />
-      <Button onClick={() => setStatisticsTitle("Достижения")}>
-        Достижения
-      </Button>
-      <Button onClick={() => setStatisticsTitle("Статистика")}>
-        Статистика
-      </Button>
-      <Button onClick={() => setStatisticsTitle("Награды")}>Награды</Button>
-      <Statistics
-        open={Boolean(statisticsTitle)}
-        onClose={() => setStatisticsTitle("")}
-        onLogin={onLoginOpen}
-        onRegister={() => setIsRegistrationOpen(true)}
-        title={statisticsTitle}
-      />
-    </Stack>
+    </>
   );
 };

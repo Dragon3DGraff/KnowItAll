@@ -3,37 +3,39 @@ import "./App.css";
 import { MultiplicationTableSolve } from "./multiplicationTable/MultiplicationTable";
 import { getTable } from "./calc/getMultiplicationTable";
 
-import { UserName } from "./user/UserName";
-import { createContext, useCallback, useEffect, useState } from "react";
-import { checkIsAuth } from "./api/checkIsAuth";
+import { createContext, useState } from "react";
+import { Author } from "./Author";
+import { Header } from "./header/Header";
 
 export const UserContext = createContext<{ userName?: string } | null>(null);
 
 function App() {
   const [userName, setUserName] = useState<string>();
 
-  const onNameChanged = useCallback((userName?: string) => {
+  const onNameChanged = (userName?: string) => {
     setUserName(userName);
-  }, []);
-
-  useEffect(() => {
-    if (!userName) {
-      checkIsAuth().then((res) => {
-        if (res.ok) {
-          setUserName(res.userName);
-        }
-      });
-    }
-  }, []);
+  };
 
   return (
     <UserContext.Provider value={{ userName }}>
-      <Stack maxWidth="700px">
-        <UserName onNameChanged={onNameChanged} />
-        <Typography variant="h3" color={"maroon"}>
-          Всезнайка
-        </Typography>
-        <MultiplicationTableSolve table={getTable()} />
+      <Stack>
+        <Header onNameChanged={onNameChanged} />
+        <Stack
+          maxWidth="700px"
+          // minHeight={"100vh"}
+          p={0}
+          my={0}
+          mx={"auto"}
+          textAlign={"center"}
+          flexGrow={2}
+        >
+          <Typography variant="h3" color={"maroon"}>
+            <span style={{ color: "#00FFFF" }}>&#10052;</span> Всезнайка
+            <span style={{ color: "#00FFFF" }}>&#10052;</span>
+          </Typography>
+          <MultiplicationTableSolve table={getTable()} />
+          <Author />
+        </Stack>
       </Stack>
     </UserContext.Provider>
   );

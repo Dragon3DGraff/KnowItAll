@@ -146,13 +146,13 @@ router.post("/checkAuth", async (req, res) => {
     console.log(token);
 
     if (!token) {
-      return res.status(401).json({ message: "No authorization" });
+      return res.status(200).json({ message: "No authorization" });
     }
 
     const decoded = jwt.verify(token, config.get("jwtSecret"));
     if (!decoded.userId) {
       res.clearCookie("token");
-      return res.status(400).json({ message: "User not found" });
+      return res.status(200).json({ message: "User not found" });
     }
     const userId = decoded.userId;
 
@@ -160,7 +160,7 @@ router.post("/checkAuth", async (req, res) => {
 
     if (!user) {
       res.clearCookie("token");
-      return res.status(400).json({ message: "User not found" });
+      return res.status(200).json({ message: "User not found" });
     }
     res.status(200).json({ userId, userName: user.userName });
   } catch (error) {

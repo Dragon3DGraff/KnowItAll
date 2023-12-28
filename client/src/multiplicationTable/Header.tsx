@@ -8,8 +8,8 @@ type Props = {
 };
 export const Header = ({ started, finished, onFinish }: Props) => {
   return (
-    <Stack>
-      <Typography variant="h4">Таблица умножения</Typography>
+    <Stack >
+      <Typography variant="h5">Таблица умножения</Typography>
       {started && (
         <Timer started={started} finished={finished} onFinish={onFinish} />
       )}
