@@ -106,11 +106,14 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setStarted(false);
   };
 
+  const surrender = () => {
+    onReplay();
+    sendResults(0, [], mode, user?.userName);
+  };
+
   const onTimerFinished = async (timer: number) => {
-    if (user?.userName) {
-      await sendResults(timer, results, mode);
-      setIsSended(true);
-    }
+    await sendResults(timer, results, mode, user?.userName);
+    setIsSended(true);
   };
 
   const onModeChange = () => {
@@ -263,7 +266,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           )}
           {!allFilled && !finished && (
             <Box my={1} mt={"auto"}>
-              <Button onClick={onReplay} sx={{ width: "fit-content" }}>
+              <Button onClick={surrender} sx={{ width: "fit-content" }}>
                 Сдаться
               </Button>
             </Box>

@@ -4,6 +4,7 @@ const config = require("config");
 cookieParser = require("cookie-parser");
 const path = require("path");
 var bodyParser = require("body-parser");
+const logger = require("./logger/Logger");
 
 const app = express();
 
@@ -18,19 +19,30 @@ const db = require("./models");
 
 app.use((req, res, next) => {
   // if (process.env.NODE_ENV !== "production") {
-    res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
+  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
 
-    res.header("Access-Control-Allow-Credentials", true);
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization, credentials"
-    );
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, credentials"
+  );
   // }
   next();
 });
 
 app.use(cookieParser());
 app.use(express.json({ extended: true }));
+
+app.use((req, res, next) => {
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+  logger.info(
+    `REQUEST: ${req.method} ${req.url} from ${ip} ${
+      req.cookies.token ? "Авторизован" : "Не авторизован"
+    }`
+  );
+
+  next();
+});
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/data", require("./routes/results.routes"));
 
@@ -47,14 +59,18 @@ if (process.env.NODE_ENV === "production") {
 async function start() {
   try {
     await db.sequelize.authenticate();
-    console.log("Connection has been established successfully.");
+    logger.info("sequelize: успешно подключился к БД");
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    logger.error("sequelize: Не удало подключиться к БД: ...");
+    logger.error(error);
   }
   try {
-    app.listen(PORT, () => console.log(`Server has been started at ${PORT}`));
+    app.listen(PORT, () => {
+      logger.info(`Server: запущен порт ${PORT}`);
+    });
   } catch (error) {
-    console.log("Server error", error.message);
+    logger.error(`Server: error: ...`);
+    logger.error(error.message);
     process.exit(1);
   }
 }

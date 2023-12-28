@@ -12,3 +12,5 @@ export const TIMER_STEPS = {
   three: 120,
   end: 180,
 };
+
+export const ANONIM_UUID = 'knia_temp_id'
