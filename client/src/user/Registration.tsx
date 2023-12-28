@@ -136,7 +136,7 @@ export const Registration = ({
             Успешно!
           </Typography>
         ) : (
-          <form id="registration">
+          <form id="registration" autoComplete="off">
             <Stack gap={1}>
               <Typography minWidth={"100px"}>Логин</Typography>
               <TextField
