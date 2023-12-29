@@ -1,23 +1,37 @@
 import { Mode, Result } from "../types/multiplication.types";
-import { API_URL } from "../utils/constants";
+import { StorageHelper } from "../utils/StorageHelper";
+import { ANONIM_UUID, API_URL } from "../utils/constants";
 
 export const sendResults = async (
   timer: number,
   results: Result[],
-  mode: Mode
+  mode: Mode,
+  userName?: string
 ) => {
   try {
+    const data: {
+      timer: number;
+      results: Result[];
+      mode: Mode;
+      uuid?: string;
+    } = {
+      timer,
+      results,
+      mode,
+    };
+    if (!userName) {
+      const anonimUUID = StorageHelper.get(ANONIM_UUID);
+      if (anonimUUID) {
+        data.uuid = anonimUUID;
+      }
+    }
     await fetch(API_URL + "api/data/results", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         credentials: "include",
       },
-      body: JSON.stringify({
-        timer,
-        results,
-        mode,
-      }),
+      body: JSON.stringify(data),
     });
   } catch (error) {
     console.log(error);

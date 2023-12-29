@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { checkIsAuth } from "../api/checkIsAuth";
 import { UserContext } from "../App";
 import { UserName } from "../user/UserName";
+import { setAnonimId } from "../api/setAnonimId";
 
 type Props = {
   onNameChanged: (userName?: string) => void;
@@ -17,6 +18,8 @@ export const Header = ({ onNameChanged }: Props) => {
       checkIsAuth().then((res) => {
         if (res.ok) {
           onNameChanged(res.userName);
+        } else {
+          setAnonimId();
         }
       });
     }

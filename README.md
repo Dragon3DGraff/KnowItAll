@@ -158,6 +158,6 @@ Project Link: [https://github.com/Dragon3DGraff/KnowItAll](https://github.com/Dr
 [issues-url]: https://github.com/Dragon3DGraff/KnowItAll/issues
 [license-shield]: https://img.shields.io/github/license/Dragon3DGraff/KnowItAll.svg?style=for-the-badge
 [license-url]: https://github.com/Dragon3DGraff/KnowItAll/blob/master/LICENSE.txt
-[product-screenshot]: images\preview.PNG
+[product-screenshot]: images/preview.PNG
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/

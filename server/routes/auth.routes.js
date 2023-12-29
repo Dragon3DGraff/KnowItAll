@@ -2,28 +2,49 @@ const { Router } = require("express");
 const router = Router();
 const config = require("config");
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
+const logger = require("../logger/Logger");
+
 const bcrypt = require("bcryptjs");
 const { check, validationResult } = require("express-validator");
+const crypto = require("crypto");
 
 const db = require("../models");
 const Users = db.Users;
 
-router.post("/checkLogin", async (req, res) => {
-  try {
-    const { login } = req.body;
+router.post(
+  "/checkLogin",
+  check("login", "Введите логин").exists(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
 
-    const candidate = await Users.findOne({
-      where: { login: login },
-    });
+      if (!errors.isEmpty()) {
+        logger.error(`${req.url}: Incorrect data: ...`);
+        logger.error(errors.array());
 
-    if (candidate) {
-      return res.status(200).json({ isFree: false });
+        return res.status(400).json({
+          errors: errors.array(),
+          message: "Incorrect data",
+        });
+      }
+      const { login } = req.body;
+
+      const candidate = await Users.findOne({
+        where: { login: login },
+      });
+
+      if (candidate) {
+        logger.info(`${req.url}: Логин ${login} занят`);
+        return res.status(200).json({ isFree: false });
+      }
+
+      return res.status(200).json({ isFree: true });
+    } catch (error) {
+      logger.error(`${req.url}: Ошибка: ${error.message ?? ""} ...`);
+      logger.error(error);
     }
-
-    return res.status(200).json({ isFree: true });
-  } catch (error) {}
-});
+  }
+);
 
 router.post(
   "/register",
@@ -39,6 +60,9 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        logger.error(`${req.url}: Incorrect data:${error.message ?? ""} ...`);
+        logger.error(errors.array());
+
         return res.status(400).json({
           errors: errors.array(),
           message: "Incorrect registration data",
@@ -52,6 +76,8 @@ router.post(
       });
 
       if (candidate) {
+        logger.error(`Этот логин уже занят ${login}`);
+
         return res.status(400).json({
           message: "User is already exist",
           errors: { login: "Этот логин уже занят" },
@@ -66,13 +92,16 @@ router.post(
         role: "student",
       });
       if (data) {
+        logger.info(`Account created! id: ${data.id}, userName: ${data.userName}`);
+
         res
           .status(201)
           .json({ message: "Account created!", userName: data.userName });
       }
     } catch (error) {
       res.status(500).json({ message: "ERROR" });
-      console.log(error);
+      logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
+      logger.error(error);
     }
   }
 );
@@ -87,6 +116,9 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        logger.error(`${req.url}: Incorrect data:${error.message ?? ""} ...`);
+        logger.error(errors.array());
+
         return res.status(400).json({
           errors: errors.array(),
           message: "Incorrect login data",
@@ -98,6 +130,8 @@ router.post(
       });
 
       if (!user) {
+        logger.error(`${req.url}: Пользователь не найден ${login}`);
+
         return res.status(400).json({
           message: "User not found",
           errors: { login: "Пользователь не найден" },
@@ -107,6 +141,8 @@ router.post(
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
+        logger.error(`${req.url}: Неверный пароль`);
+
         return res.status(400).json({
           message: "Wrong password",
           errors: { password: "Неверный пароль" },
@@ -123,27 +159,44 @@ router.post(
         maxAge: 3600000,
       });
 
+      logger.info(`${req.url}: id: ${user.id} ${user.userName} залогинился`);
+
       res.json({ userId: user.id, userName: user.userName });
     } catch (error) {
       res.status(500).json({ message: "ERROR" });
-      console.log(error);
+      logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
+      logger.error(error);
     }
   }
 );
 
 router.post("/logout", async (req, res) => {
   try {
+    const token = req.cookies.token;
+
+    let userId;
+    if (token) {
+      const decoded = jwt.verify(token, config.get("jwtSecret"));
+      if (decoded.userId) {
+        userId = decoded.userId;
+      }
+    }
+
     res.clearCookie("token");
+
+    logger.info(`${req.url}: ${userId} разлогинился`);
+
     res.json({ userId: undefined, userName: undefined });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
+    logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
+    logger.error(error);
   }
 });
 
 router.post("/checkAuth", async (req, res) => {
   try {
     const token = req.cookies.token;
-    console.log(token);
 
     if (!token) {
       return res.status(200).json({ message: "No authorization" });
@@ -165,10 +218,44 @@ router.post("/checkAuth", async (req, res) => {
     res.status(200).json({ userId, userName: user.userName });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
-    console.log(error);
+    logger.error(`${req.url}: Ошибка проверки:${error.message ?? ""} ...`);
+    logger.error(error);
   }
 
   req.cookies;
 });
+
+router.post(
+  "/registerAnon",
+
+  async (req, res) => {
+    try {
+      const userName = crypto.randomUUID();
+      const login = crypto.randomUUID();
+
+      const hashedPassword = await bcrypt.hash(login, 12);
+
+      const data = await Users.create({
+        userName,
+        login,
+        password: hashedPassword,
+        registered: new Date(),
+        role: "anonim",
+      });
+      if (data) {
+        logger.info(
+          `${req.url}: Зарегистрирован анонимный пользователь ${userName}`
+        );
+        res
+          .status(201)
+          .json({ message: "Anon account created", uuid: userName });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "ERROR" });
+      logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
+      logger.error(error);
+    }
+  }
+);
 
 module.exports = router;

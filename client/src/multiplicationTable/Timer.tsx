@@ -82,10 +82,14 @@ export const Timer = ({ started, finished, mode, onFinish }: Props) => {
     <Stack
       direction={"row"}
       alignItems={"center"}
+      justifyContent={"center"}
       position={"absolute"}
-      top={30}
-      left={0}
-      m={2}
+      top={25}
+      left={100}
+      p={0.5}
+      bgcolor={"#fff"}
+      borderRadius={"26px"}
+      ml={2}
     >
       {mode === Mode.EXAM ? (
         <>

@@ -2,9 +2,8 @@ const { Router } = require("express");
 const router = Router();
 const config = require("config");
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
-const bcrypt = require("bcryptjs");
-const fsPromises = fs.promises;
+const logger = require("../logger/Logger");
+
 const { check, validationResult } = require("express-validator");
 
 const db = require("../models");
@@ -32,30 +31,14 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        logger.error(`${req.url}: Incorrect data: ...`);
+        logger.error(errors.array());
+
         return res.status(400).json({
           errors: errors.array(),
-          message: "Incorrect resuts data",
+          message: "Incorrect data",
         });
       }
-      const token = req.cookies.token;
-
-      if (!token) {
-        return res.status(401).json({ message: "No authorization" });
-      }
-
-      const decoded = jwt.verify(token, config.get("jwtSecret"));
-      if (!decoded.userId) {
-        res.clearCookie("token");
-        return res.status(400).json({ message: "User not found" });
-      }
-      const userId = decoded.userId;
-
-      const user = await Users.findByPk(userId);
-      if (!user) {
-        res.clearCookie("token");
-        return res.status(400).json({ message: "User not found" });
-      }
-
       const mode = req.body.mode;
       const results = req.body.results;
       const timer = req.body.timer;
@@ -75,22 +58,78 @@ router.post(
         numbers.add(result.number2);
       });
 
-      await Results.create({
+      const data = {
         results,
         correctCount,
         incorrectCount,
         solvedCount,
-        userId: user.id,
+        userId: null,
         date: new Date(),
         mode,
         numbers: [...numbers].sort((a, b) => a - b).join(";"),
         timer,
-      });
+      };
+
+      const token = req.cookies.token;
+      const getUserId = async (token) => {
+        if (!token) {
+          logger.info(`${req.url}: Сохранение результатов без токена`);
+          return null;
+        }
+
+        const decoded = jwt.verify(token, config.get("jwtSecret"));
+        if (!decoded.userId) {
+          logger.info(`${req.url}: Не найден userId`);
+          return null;
+        }
+        const userId = decoded.userId;
+
+        const user = await Users.findByPk(userId);
+        if (!user) {
+          logger.info(`${req.url}: Не найден пользователь`);
+          return null;
+        }
+        return userId;
+      };
+
+      let userId = await getUserId(token);
+
+      if (!userId && req.body.uuid) {
+        logger.info(
+          `${req.url}: Попытка найти анонимного пользователя по ${req.body.uuid}`
+        );
+        const candidate = await Users.findOne({
+          where: { userName: req.body.uuid },
+        });
+        if (!candidate) {
+          logger.info(
+            `${req.url}: Не нашел анонимного пользователя по ${req.body.uuid}`
+          );
+          return res
+            .status(400)
+            .json({ message: "Не удалось сохранить результаты" });
+        }
+        userId = candidate.id;
+      }
+
+      if (!userId) {
+        logger.error(`${req.url}: Пользователь не найден`);
+
+        return res.status(400).json({
+          message: "User not found",
+          errors: { login: "Пользователь не найден" },
+        });
+      }
+
+      data.userId = userId;
+      await Results.create(data);
+      logger.info(`${req.url}: сохранил результаты для id: ${userId}`);
 
       res.status(201).json({ message: "resuts Saved!" });
     } catch (error) {
+      logger.error(`${req.url}: ошибка:${error.message ?? ""} ...`);
+      logger.error(error);
       res.status(500).json({ message: error });
-      await fsPromises.appendFile("errors.txt", JSON.stringify(error) + "\n");
       console.log(error);
     }
   }

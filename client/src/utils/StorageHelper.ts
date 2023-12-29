@@ -26,5 +26,6 @@ export class StorageHelper {
         console.log("Не удалось распарсить из локалсторедж");
       }
     }
+    return null
   }
 }
