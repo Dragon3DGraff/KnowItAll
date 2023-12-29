@@ -104,6 +104,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setFinished(false);
     setTask([]);
     setStarted(false);
+    setIsSended(false);
   };
 
   const surrender = () => {
