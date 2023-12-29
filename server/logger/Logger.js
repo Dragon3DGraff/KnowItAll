@@ -13,7 +13,9 @@ class Logger {
     this.addLog(data, "INFO");
   }
   error(data) {
-    console.error(data);
+    if (typeof data !== "string") {
+      console.error(data);
+    }
     this.addLog(data, "ERROR");
   }
 

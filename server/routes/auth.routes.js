@@ -92,7 +92,7 @@ router.post(
         role: "student",
       });
       if (data) {
-        logger.info(`Account created! id: ${data}, userName: ${data.userName}`);
+        logger.info(`Account created! id: ${data.id}, userName: ${data.userName}`);
 
         res
           .status(201)
@@ -159,7 +159,7 @@ router.post(
         maxAge: 3600000,
       });
 
-      logger.info(`${req.url}: ${user.userName} залогинился`);
+      logger.info(`${req.url}: id: ${user.id} ${user.userName} залогинился`);
 
       res.json({ userId: user.id, userName: user.userName });
     } catch (error) {
@@ -184,7 +184,7 @@ router.post("/logout", async (req, res) => {
 
     res.clearCookie("token");
 
-    logger.info(`${req.url}: ${userId} разалогинился`);
+    logger.info(`${req.url}: ${userId} разлогинился`);
 
     res.json({ userId: undefined, userName: undefined });
   } catch (error) {

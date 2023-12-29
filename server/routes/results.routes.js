@@ -112,6 +112,15 @@ router.post(
         userId = candidate.id;
       }
 
+      if (!userId) {
+        logger.error(`${req.url}: Пользователь не найден`);
+
+        return res.status(400).json({
+          message: "User not found",
+          errors: { login: "Пользователь не найден" },
+        });
+      }
+
       data.userId = userId;
       await Results.create(data);
       logger.info(`${req.url}: сохранил результаты для id: ${userId}`);
