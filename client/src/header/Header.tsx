@@ -30,7 +30,7 @@ export const Header = ({ onNameChanged }: Props) => {
       direction={"row"}
       width={"100vw"}
       justifyContent={"space-between"}
-      minWidth={" 400px"}
+      minWidth={"250px"}
     >
       <Box px={3}>
         <Button onClick={() => setStatisticsTitle("Достижения")}>

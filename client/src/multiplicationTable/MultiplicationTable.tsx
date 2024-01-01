@@ -11,6 +11,7 @@ import {
   Stack,
   Switch,
   Typography,
+  styled,
 } from "@mui/material";
 import { Equation } from "./Equation";
 import {
@@ -27,6 +28,16 @@ import { SELECTED_NUMBERS } from "../utils/constants";
 import { sendResults } from "../api/sendResults";
 import { Header } from "./Header";
 import { UserContext } from "../App";
+
+const TableGrid = styled(Stack)(({ theme }) => ({
+  maxHeight: "380px",
+  [theme.breakpoints.down("md")]: {
+    maxHeight: "500px",
+  },
+  [theme.breakpoints.down("sm")]: {
+    maxHeight: "700px",
+  },
+}));
 
 type Props = {
   table: MultiplicationTable;
@@ -221,7 +232,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
                   />
                 </FormGroup>
               </Box>
-              <Stack direction={"row"} flexWrap={"wrap"} alignItems={"center"}>
+              <Stack direction={"row"} flexWrap={"wrap"} alignItems={"center"} px={2} >
                 {numbers.map((number) => (
                   <FormGroup key={number}>
                     <FormControlLabel
@@ -242,7 +253,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         )}
       </Box>
       {started ? (
-        <Stack flexWrap={"wrap"} maxHeight={"360px"} mt={1}>
+        <TableGrid flexWrap={"wrap"} mt={1}>
           {finished && results.length
             ? results.map((result, i) => (
                 <Equation
@@ -293,7 +304,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               </Button>
             </Box>
           )}
-        </Stack>
+        </TableGrid>
       ) : (
         <Box my={2}>
           <Button
@@ -308,9 +319,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           </Button>
         </Box>
       )}
-      <Stack maxWidth={"400px"} mt={2}>
+      {/* <Stack maxWidth={"400px"} mt={2}>
         <img src="./nez.png" />
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };
