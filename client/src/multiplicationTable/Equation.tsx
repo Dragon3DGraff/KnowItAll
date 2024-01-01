@@ -77,6 +77,7 @@ export const Equation = ({
           <StyledInput
             size="small"
             type="number"
+            inputMode="numeric"
             inputProps={{ min: 0, max: 100 }}
             autoComplete="off"
             onChange={onInputChange}

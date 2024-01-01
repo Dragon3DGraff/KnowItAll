@@ -113,8 +113,25 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   };
 
   const onTimerFinished = async (timer: number) => {
-    await sendResults(timer, results, mode, user?.userName);
+    const res = await sendResults(timer, results, mode, user?.userName);
     setIsSended(true);
+
+    if (res?.ok) {
+      window.Ya.share2("ya", {
+        theme: {
+          services:
+            "vkontakte,telegram,whatsapp,odnoklassniki,twitter,viber,skype,linkedin,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
+          bare: false,
+          limit: 3,
+          // size: "l",
+        },
+        content: {
+          url: `
+            https://know-it-all.ru?share=${res.id}`,
+          title: "Я решил!",
+        },
+      });
+    }
   };
 
   const onModeChange = () => {
@@ -135,7 +152,6 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         onFinish={onTimerFinished}
         mode={mode}
       />
-
       <Box
         sx={{
           display: "flex",
@@ -255,14 +271,19 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               ))}
           {allFilled && (
             <Box my={1}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={onFinished}
-                disabled={isSended}
-              >
-                Готово!
-              </Button>
+              {!isSended && (
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={onFinished}
+                  disabled={isSended}
+                >
+                  Готово!
+                </Button>
+              )}
+              <Box py={1}>
+                <div id="ya" />
+              </Box>
             </Box>
           )}
           {!allFilled && !finished && (

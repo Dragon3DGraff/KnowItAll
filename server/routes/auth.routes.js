@@ -161,7 +161,7 @@ router.post(
 
       logger.info(`${req.url}: id: ${user.id} ${user.userName} залогинился`);
 
-      res.json({ userId: user.id, userName: user.userName });
+      res.json({ userId: user.id, userName: user.userName, role: user.role });
     } catch (error) {
       res.status(500).json({ message: "ERROR" });
       logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
@@ -186,7 +186,7 @@ router.post("/logout", async (req, res) => {
 
     logger.info(`${req.url}: ${userId} разлогинился`);
 
-    res.json({ userId: undefined, userName: undefined });
+    res.json({ userId: undefined, userName: undefined, role: undefined });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
     logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
@@ -215,7 +215,7 @@ router.post("/checkAuth", async (req, res) => {
       res.clearCookie("token");
       return res.status(200).json({ message: "User not found" });
     }
-    res.status(200).json({ userId, userName: user.userName });
+    res.status(200).json({ userId, userName: user.userName, role: user.role });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
     logger.error(`${req.url}: Ошибка проверки:${error.message ?? ""} ...`);

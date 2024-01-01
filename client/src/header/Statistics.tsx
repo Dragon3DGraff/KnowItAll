@@ -5,8 +5,9 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../App";
+import { getStatistics } from "../api/getStatistics";
 
 type Props = {
   open: boolean;
@@ -22,6 +23,10 @@ export const Statistics = ({
   title,
 }: Props) => {
   const user = useContext(UserContext);
+
+  useEffect(() => {
+    getStatistics()
+  },[])
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg">

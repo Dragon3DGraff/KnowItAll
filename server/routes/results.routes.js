@@ -122,10 +122,10 @@ router.post(
       }
 
       data.userId = userId;
-      await Results.create(data);
+      const created = await Results.create(data);
       logger.info(`${req.url}: сохранил результаты для id: ${userId}`);
 
-      res.status(201).json({ message: "resuts Saved!" });
+      res.status(201).json({ message: "resuts Saved!", id: created.id });
     } catch (error) {
       logger.error(`${req.url}: ошибка:${error.message ?? ""} ...`);
       logger.error(error);
