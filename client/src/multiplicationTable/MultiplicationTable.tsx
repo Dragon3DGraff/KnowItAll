@@ -202,15 +202,6 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               <Box alignSelf={"center"} width={"250px"}>
                 <FormGroup key={"all"}>
                   <Stack direction={"row"} gap={2}>
-                    {/* {mode === Mode.EXAM ? (
-                      <Box width={"40px"} height={"40px"}>
-                        <img src="./super.png" />
-                      </Box>
-                    ) : (
-                      <Box width={"40px"} height={"40px"}>
-                        <img src="./itak.png" />
-                      </Box>
-                    )} */}
                     <FormControlLabel
                       control={
                         <Switch
@@ -319,9 +310,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           </Button>
         </Box>
       )}
-      {/* <Stack maxWidth={"400px"} mt={2}>
+      <Stack maxWidth={"400px"} mt={2}>
         <img src="./nez.png" />
-      </Stack> */}
+      </Stack>
     </Stack>
   );
 };

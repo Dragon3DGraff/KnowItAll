@@ -25,7 +25,7 @@ export const sendResults = async (
         data.uuid = anonimUUID;
       }
     }
-   const res = await fetch(API_URL + "api/data/results", {
+   const res = await fetch(API_URL + "/data/results", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

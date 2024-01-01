@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { LoginData } from "../types/api.types";
+import { LoginData, User } from "../types/api.types";
 
 import { login } from "../api/login";
 import { Hourglass } from "react-loader-spinner";
@@ -17,7 +17,7 @@ import { Hourglass } from "react-loader-spinner";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onLogin: (name: string) => void;
+  onLogin: (user: User) => void;
 };
 export const Login = ({ open, onClose, onLogin }: Props) => {
   const [form, setForm] = useState<LoginData>({
@@ -63,11 +63,11 @@ export const Login = ({ open, onClose, onLogin }: Props) => {
     const res = await login(form);
     setIsLoading(false);
 
-    if (res.ok) {
-      onLogin(res.userName);
+    if (!res.error) {
+      onLogin(res);
       onCloseHandler();
     } else {
-      const errors = res.errors?.errors;
+      const errors = res.error?.errors;
       errors && setErrors((prev) => ({ ...prev, ...errors }));
       setError("Ой, что-то пошло не так...");
     }

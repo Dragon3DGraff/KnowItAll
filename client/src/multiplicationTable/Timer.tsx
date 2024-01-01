@@ -10,7 +10,7 @@ import { TIMER_STEPS } from "../utils/constants";
 import { Mode } from "../types/multiplication.types";
 
 const TimerDiv = styled(Box)(() => ({
- left: "calc( 100vw - 50% - 57px)"
+  left: "calc( 50vw - 57px)",
 }));
 
 type Props = {
@@ -86,12 +86,10 @@ export const Timer = ({ started, finished, mode, onFinish }: Props) => {
     <TimerDiv
       position={"absolute"}
       top={"40px"}
-      // left={100}
       px={1}
       py={0.5}
       bgcolor={"#fff"}
       borderRadius={"26px"}
-      // ml={2}
       border={"3px solid #1976d2"}
       boxShadow={"6px 10px 10px"}
     >

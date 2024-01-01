@@ -25,14 +25,14 @@ export const Statistics = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
-    getStatistics()
-  },[])
+    getStatistics();
+  }, []);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg">
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        {user?.userName
+        {user
           ? `Скоро здесь появится ${title}`
           : `Доступно только для зарегистрированных пользователей`}
       </DialogContent>

@@ -5,9 +5,10 @@ import { Registration } from "./Registration";
 import { Login } from "./Login";
 import { logout } from "../api/logout";
 import { AuthMenu } from "./AuthMenu";
+import { User } from "../types/api.types";
 
 type Props = {
-  onNameChanged: (userName?: string) => void;
+  onNameChanged: (user: User | null) => void;
 };
 export const UserName = ({ onNameChanged }: Props) => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
@@ -16,15 +17,15 @@ export const UserName = ({ onNameChanged }: Props) => {
 
   const onDeleteName = async () => {
     await logout();
-    onNameChanged(undefined);
+    onNameChanged(null);
   };
 
   const onRegistrationClose = () => {
     setIsRegistrationOpen(false);
   };
 
-  const onLogin = (name: string) => {
-    onNameChanged(name);
+  const onLogin = (user: User) => {
+    onNameChanged(user);
   };
 
   const onLoginOpen = () => {
@@ -41,7 +42,7 @@ export const UserName = ({ onNameChanged }: Props) => {
         <Box pr={2}>
           <Box>
             <Typography color={"green"} variant="h6">
-              Привет, {user?.userName}!
+              Привет, {user.userName}!
             </Typography>
           </Box>
 

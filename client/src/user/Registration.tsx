@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { RegisterData } from "../types/api.types";
+import { RegisterData, User } from "../types/api.types";
 import { register } from "../api/register";
 import { checkLogin } from "../api/checkLogin";
 import { login } from "../api/login";
@@ -18,7 +18,7 @@ import { Hourglass } from "react-loader-spinner";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onLogin: (name: string) => void;
+  onLogin: (user: User) => void;
   onLoginError: () => void;
 };
 export const Registration = ({
@@ -64,8 +64,8 @@ export const Registration = ({
 
       onCloseHandler();
 
-      if (loginInfo.ok) {
-        onLogin(loginInfo.userName);
+      if (!loginInfo.error) {
+        onLogin(loginInfo);
       } else {
         setLoginError(true);
       }

@@ -6,18 +6,19 @@ import { getTable } from "./calc/getMultiplicationTable";
 import { createContext, useState } from "react";
 import { Author } from "./Author";
 import { Header } from "./header/Header";
+import { User } from "./types/api.types";
 
-export const UserContext = createContext<{ userName?: string } | null>(null);
+export const UserContext = createContext<User | null>(null);
 
 function App() {
-  const [userName, setUserName] = useState<string>();
+  const [user, setUser] = useState<User | null>(null);
 
-  const onNameChanged = (userName?: string) => {
-    setUserName(userName);
+  const onNameChanged = (user: User | null) => {
+    setUser(user);
   };
 
   return (
-    <UserContext.Provider value={{ userName }}>
+    <UserContext.Provider value={user}>
       <Stack minHeight={"100vh"}>
         <Header onNameChanged={onNameChanged} />
         <Stack

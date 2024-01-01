@@ -5,7 +5,7 @@ export const getStatistics = async () => {
   try {
     const anonimUUID = StorageHelper.get(ANONIM_UUID);
 
-    const res = await fetch(API_URL + "api/stat/statistics", {
+    const res = await fetch(API_URL + "/stat/statistics", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

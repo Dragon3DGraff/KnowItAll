@@ -2,7 +2,7 @@ import { API_URL } from "../utils/constants";
 
 export const registerAnonim = async () => {
   try {
-    const res = await fetch(API_URL + "api/auth/registerAnon", {
+    const res = await fetch(API_URL + "/auth/registerAnon", {
       method: "POST",
     });
     const answer = await res.json();

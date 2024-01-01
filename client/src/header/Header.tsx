@@ -5,9 +5,10 @@ import { checkIsAuth } from "../api/checkIsAuth";
 import { UserContext } from "../App";
 import { UserName } from "../user/UserName";
 import { setAnonimId } from "../api/setAnonimId";
+import { User } from "../types/api.types";
 
 type Props = {
-  onNameChanged: (userName?: string) => void;
+  onNameChanged: (user: User | null) => void;
 };
 export const Header = ({ onNameChanged }: Props) => {
   const [statisticsTitle, setStatisticsTitle] = useState("");
@@ -16,8 +17,8 @@ export const Header = ({ onNameChanged }: Props) => {
   useEffect(() => {
     if (!user?.userName) {
       checkIsAuth().then((res) => {
-        if (res.ok) {
-          onNameChanged(res.userName);
+        if (!res.error) {
+          onNameChanged(res);
         } else {
           setAnonimId();
         }
@@ -39,14 +40,16 @@ export const Header = ({ onNameChanged }: Props) => {
         {/* <Button onClick={() => setStatisticsTitle("Статистика")}>
           Статистика
         </Button> */}
-        <Button onClick={() => setStatisticsTitle("Награды")}>Награды</Button>
+        {/* <Button onClick={() => setStatisticsTitle("Награды")}>Награды</Button> */}
       </Box>
       <UserName onNameChanged={onNameChanged} />
-      <Statistics
-        open={Boolean(statisticsTitle)}
-        onClose={() => setStatisticsTitle("")}
-        title={statisticsTitle}
-      />
+      {statisticsTitle && (
+        <Statistics
+          open={Boolean(statisticsTitle)}
+          onClose={() => setStatisticsTitle("")}
+          title={statisticsTitle}
+        />
+      )}
     </Stack>
   );
 };
