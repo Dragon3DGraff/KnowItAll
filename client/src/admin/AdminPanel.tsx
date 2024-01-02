@@ -1,21 +1,20 @@
 import { Stack, Typography } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../App";
+import { useEffect, useState } from "react";
 import { getStatisticsAll } from "../api/getStatisticsAll";
-import { Role } from "../types/api.types";
+import { useUser } from "../hooks/useUser";
 
 export const AdminPanel = () => {
-  const user = useContext(UserContext);
+  const { user, isAdmin } = useUser();
 
   const [results, setResults] = useState<Record<string, string>>({});
 
   useEffect(() => {
     user &&
-      user.role === Role.ADMIN &&
+      isAdmin &&
       getStatisticsAll().then((res) => {
         setResults(res);
       });
-  }, [user]);
+  }, [user, isAdmin]);
 
   if (!user) {
     return null;

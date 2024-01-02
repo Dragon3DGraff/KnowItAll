@@ -8,11 +8,13 @@ import { Statistics } from "./multiplicationTable/Statistics.tsx";
 import { MultiplicationTableSolve } from "./multiplicationTable/MultiplicationTable.tsx";
 import { getTable } from "./calc/getMultiplicationTable.ts";
 import { AdminPanel } from "./admin/AdminPanel.tsx";
+import { ErrorPage } from "./ErrorPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "statistics",

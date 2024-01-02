@@ -1,18 +1,18 @@
 import { Box, Button, Stack } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { checkIsAuth } from "../api/checkIsAuth";
-import { UserContext } from "../App";
 import { UserName } from "../user/UserName";
 import { setAnonimId } from "../api/setAnonimId";
-import { Role, User } from "../types/api.types";
+import { User } from "../types/api.types";
 import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useUser } from "../hooks/useUser";
 
 type Props = {
   onNameChanged: (user: User | null) => void;
 };
 export const Header = ({ onNameChanged }: Props) => {
-  const user = useContext(UserContext);
+  const { user, isAdmin } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,9 +44,7 @@ export const Header = ({ onNameChanged }: Props) => {
         ) : (
           <Button onClick={() => navigate("/statistics")}>Достижения</Button>
         )}
-        {user?.role === Role.ADMIN && (
-          <Button onClick={() => navigate("/admin")}>Админка</Button>
-        )}
+        {isAdmin && <Button onClick={() => navigate("/admin")}>Админка</Button>}
       </Box>
       <UserName onNameChanged={onNameChanged} />
     </Stack>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { numbers } from "../calc/getMultiplicationTable";
 import {
   Box,
@@ -27,10 +27,10 @@ import { StorageHelper } from "../utils/StorageHelper";
 import { SELECTED_NUMBERS } from "../utils/constants";
 import { sendResults } from "../api/sendResults";
 import { Header } from "./Header";
-import { UserContext } from "../App";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { secondsToMin } from "../utils/secondsToMin";
 import { getStatisticsById } from "../api/getStatisticsById";
+import { useUser } from "../hooks/useUser";
 
 const TableGrid = styled(Stack)(({ theme }) => ({
   maxHeight: "380px",
@@ -54,7 +54,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [started, setStarted] = useState<boolean>(false);
   const [finished, setFinished] = useState<boolean>(false);
   const [task, setTask] = useState<TableItem[]>([]);
-  const user = useContext(UserContext);
+  const { user } = useUser();
   const [mode, setMode] = useState<Mode>(Mode.EXAM);
   const [isSended, setIsSended] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();

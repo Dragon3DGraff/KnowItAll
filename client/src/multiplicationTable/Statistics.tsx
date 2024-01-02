@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { getStatistics } from "../api/getStatistics";
 import { MultiplationsStatistics } from "../types/multiplication.types";
 
@@ -18,7 +18,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import format from "date-fns/format";
 import { ru } from "date-fns/locale";
-import { UserContext } from "../App";
+import { Hourglass } from "react-loader-spinner";
+import { useUser } from "../hooks/useUser";
 
 function Row(props: { row: MultiplationsStatistics }) {
   const { row } = props;
@@ -90,16 +91,24 @@ function Row(props: { row: MultiplationsStatistics }) {
   );
 }
 export const Statistics = () => {
-  const user = useContext(UserContext);
+  const { user } = useUser();
 
   const [results, setResults] = useState<MultiplationsStatistics[]>([]);
+  const [isLoading, setisLoading] = useState(false);
+
   useEffect(() => {
-    user &&
-      getStatistics().then((res) => {
-        if (!("error" in res)) {
-          setResults(res);
-        }
-      });
+    if (user) {
+      setisLoading(true);
+      getStatistics()
+        .then((res) => {
+          if (!("error" in res)) {
+            setResults(res);
+          }
+        })
+        .finally(() => {
+          setisLoading(false);
+        });
+    }
   }, [user]);
 
   if (!user) {
@@ -110,6 +119,20 @@ export const Statistics = () => {
           Доступно только зарегистрированным пользователям
         </Typography>
       </>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Hourglass
+        visible={true}
+        height="40"
+        width="40"
+        ariaLabel="hourglass-loading"
+        wrapperStyle={{ margin: "auto" }}
+        wrapperClass=""
+        colors={["#306cce", "#72a1ed"]}
+      />
     );
   }
 

@@ -1,11 +1,11 @@
 import { Typography, Box, Button } from "@mui/material";
-import { useContext, useState } from "react";
-import { UserContext } from "../App";
+import { useState } from "react";
 import { Registration } from "./Registration";
 import { Login } from "./Login";
 import { logout } from "../api/logout";
 import { AuthMenu } from "./AuthMenu";
 import { User } from "../types/api.types";
+import { useUser } from "../hooks/useUser";
 
 type Props = {
   onNameChanged: (user: User | null) => void;
@@ -13,7 +13,7 @@ type Props = {
 export const UserName = ({ onNameChanged }: Props) => {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const user = useContext(UserContext);
+  const { user } = useUser();
 
   const onDeleteName = async () => {
     await logout();
