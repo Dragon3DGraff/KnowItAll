@@ -65,19 +65,18 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   const navigate = useNavigate();
 
-  const resultId = searchParams.get("share");
+  const sharedId = searchParams.get("share");
 
   useEffect(() => {
-    if (resultId && results.length === 0) {
-      console.log("resultId", resultId);
-      getStatisticsById(resultId).then((res) => {
+    if (sharedId && results.length === 0) {
+      getStatisticsById(sharedId).then((res) => {
         if (!("error" in res)) {
           setResults(res.data.results);
           setShared({ userName: res.userName, timer: res.data.timer });
         }
       });
     }
-  }, [resultId]);
+  }, [sharedId]);
 
   const handleCheckNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
