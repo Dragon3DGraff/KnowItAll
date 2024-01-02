@@ -8,6 +8,7 @@ const userController = require("../controller/users");
 const db = require("../models");
 const Results = db.Results;
 const Users = db.Users;
+const sequelize = db.sequelize;
 
 router.post(
   "/statistics",
@@ -17,23 +18,6 @@ router.post(
       const token = req.cookies.token;
 
       let userId = await userController.getUserId(req, token);
-
-      //   if (!userId && req.body.uuid) {
-      //     console.log("userId", userId);
-      //     logger.info(
-      //       `${req.url}: Попытка найти анонимного пользователя по ${req.body.uuid}`
-      //     );
-      //     const candidate = await Users.findOne({
-      //       where: { userName: req.body.uuid },
-      //     });
-      //     if (!candidate) {
-      //       logger.info(
-      //         `${req.url}: Не нашел анонимного пользователя по ${req.body.uuid}`
-      //       );
-      //       return res.status(400).json({ message: "Не удалось найти данные" });
-      //     }
-      //     userId = candidate.id;
-      //   }
 
       if (!userId) {
         logger.error(`${req.url}: Пользователь не найден`);
@@ -46,6 +30,7 @@ router.post(
 
       const userResults = await Results.findAll({
         where: { userId },
+        order: [["updatedAt", "DESC"]],
       });
       if (!userResults) {
         logger.info(`${req.url}: Нет данных для ${req.body.uuid}`);
@@ -53,6 +38,32 @@ router.post(
       }
 
       logger.info(`${req.url}: Нашел результаты для id: ${userId}`);
+
+      res.status(200).json({ data: userResults });
+    } catch (error) {
+      logger.error(`${req.url}: ошибка:${error.message ?? ""} ...`);
+      logger.error(error);
+      res.status(500).json({ message: error });
+      console.log(error);
+    }
+  }
+);
+
+router.post(
+  "/statistics/:id",
+
+  async (req, res) => {
+    console.log("Request Id:", req.params.id);
+    try {
+      const param = req.params.id;
+
+      const userResults = await Results.findByPk(param);
+      if (!userResults) {
+        logger.info(`${req.url}: Нет данных для ${param}`);
+        return res.status(400).json({ message: "Не удалось найти данные" });
+      }
+
+      logger.info(`${req.url}: Нашел результаты для id: ${param}`);
 
       res.status(200).json({ data: userResults });
     } catch (error) {
@@ -101,6 +112,8 @@ router.get(
 
       // console.log(users.map((user) => user.userName));
 
+      const userNames = users.map((user) => user.userName).join(", ");
+
       const anon = await Users.findAll({
         where: { role: ["anonim"] },
       });
@@ -125,9 +138,13 @@ router.get(
 
       logger.info(`Сдались: ${surrendeCount}`);
 
-      res
-        .status(200)
-        .json({ usersCount, anonCount, resultsCount, surrendeCount });
+      res.status(200).json({
+        usersCount,
+        anonCount,
+        resultsCount,
+        surrendeCount,
+        userNames,
+      });
     } catch (error) {
       logger.error(`${req.url}: ошибка:${error.message ?? ""} ...`);
       logger.error(error);
