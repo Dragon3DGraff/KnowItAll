@@ -1,20 +1,16 @@
 import { MultiplationsStatistics } from "../types/multiplication.types";
-import { StorageHelper } from "../utils/StorageHelper";
-import { ANONIM_UUID, API_URL } from "../utils/constants";
+import { API_URL } from "../utils/constants";
 
-export const getStatistics = async (): Promise<
-  MultiplationsStatistics[] | { error: string }
-> => {
+export const getStatisticsById = async (
+  id: string
+): Promise<MultiplationsStatistics | { error: string }> => {
   try {
-    const anonimUUID = StorageHelper.get(ANONIM_UUID);
-
-    const res = await fetch(API_URL + "/stat/statistics", {
+    const res = await fetch(API_URL + `/stat/statistics/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         credentials: "include",
       },
-      body: JSON.stringify({ uuid: anonimUUID }),
     });
     if (res.status === 200) {
       const body = await res.json();

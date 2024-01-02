@@ -2,7 +2,7 @@ import { Link, Stack, Typography } from "@mui/material";
 
 export const Author = () => {
   return (
-    <Stack padding={2} width={"100%"} mt={"auto"}>
+    <Stack padding={2} mt={"auto"} mx={"auto"} alignItems={'center'}>
       <Typography variant="caption" color="#778899">
         Автор: Денисов &#171;
         <Link

@@ -42,10 +42,7 @@ const TableGrid = styled(Stack)(({ theme }) => ({
   },
 }));
 
-type Props = {
-  table: MultiplicationTable;
-};
-export const MultiplicationTableSolve = ({ table }: Props) => {
+export const Shared = () => {
   const [selectedNumbers, setSelectedNumbers] = useState<
     Record<string, boolean>
   >(StorageHelper.get(SELECTED_NUMBERS) ?? {});
