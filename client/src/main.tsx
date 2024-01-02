@@ -17,16 +17,19 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "statistics",
-        element: <Statistics />,
+        index: true,
+        element: <MultiplicationTableSolve table={getTable()} />,
+        errorElement: <ErrorPage />,
       },
       {
-        path: "/",
-        element: <MultiplicationTableSolve table={getTable()} />,
+        path: "statistics",
+        element: <Statistics />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "admin",
         element: <AdminPanel />,
+        errorElement: <ErrorPage />,
       },
     ],
   },
