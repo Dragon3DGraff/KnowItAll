@@ -58,7 +58,10 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [mode, setMode] = useState<Mode>(Mode.EXAM);
   const [isSended, setIsSended] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isShared, setIsShared] = useState<boolean>(false);
+  const [shared, setShared] = useState<{
+    userName: string;
+    timer: number;
+  } | null>(null);
 
   const navigate = useNavigate();
 
@@ -69,8 +72,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
       console.log("resultId", resultId);
       getStatisticsById(resultId).then((res) => {
         if (!("error" in res)) {
-          setResults(res.results);
-          setIsShared(true);
+          setResults(res.data.results);
+          setShared({ userName: res.userName, timer: res.data.timer });
         }
       });
     }
@@ -137,6 +140,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setTask([]);
     setStarted(false);
     setIsSended(false);
+    setShared(null);
     navigate("/");
   };
 
@@ -150,21 +154,32 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setIsSended(true);
 
     if (res?.ok) {
-      setSearchParams({ share: res.id });
-      window.Ya.share2("ya", {
-        theme: {
-          services:
-            "vkontakte,telegram,whatsapp,odnoklassniki,twitter,viber,skype,linkedin,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
-          bare: false,
-          limit: 3,
-          // size: "l",
-        },
-        content: {
-          url: `
+      if (user) {
+        setSearchParams({ share: res.id });
+
+        const totalSolved = results.length;
+        const correctCount = results.filter((item) => item.result).length;
+        const title =
+          mode === Mode.EXAM
+            ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
+                timer
+              )}!`
+            : `Я решил(а) правильно ${correctCount} из ${totalSolved}!`;
+
+        window.Ya.share2("ya", {
+          theme: {
+            services:
+              "vkontakte,telegram,whatsapp,odnoklassniki,twitter,viber,skype,linkedin,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
+            bare: false,
+            limit: 3,
+          },
+          content: {
+            url: `
             https://know-it-all.ru?share=${res.id}`,
-          title: `Я решил за ${secondsToMin(timer)}!`,
-        },
-      });
+            title,
+          },
+        });
+      }
     }
   };
 
@@ -193,8 +208,14 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           justifyContent: "flex-start",
         }}
       >
+        {shared?.userName && (
+          <Stack>
+            <Typography>Результаты пользователя {shared.userName}</Typography>
+            <Typography>Время {secondsToMin(shared.timer)}</Typography>
+          </Stack>
+        )}
         <Stack direction={"row"}>
-          {finished && (
+          {(finished || shared) && (
             <Stack
               direction={"row"}
               alignItems={"center"}
@@ -208,7 +229,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               <Typography color={"#FF0000"}>
                 Неправильно {results.filter((item) => !item.result).length}
               </Typography>
-              <Button onClick={onReplay}>Заново</Button>
+              <Button onClick={onReplay}>
+                {shared ? "Решу лучше" : "Заново"}
+              </Button>
             </Stack>
           )}
         </Stack>
@@ -271,7 +294,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           </Stack>
         )}
       </Box>
-      {isShared &&
+      {shared &&
         results.map((result, i) => (
           <Equation
             key={result.id}

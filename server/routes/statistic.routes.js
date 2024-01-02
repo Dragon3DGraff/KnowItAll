@@ -1,7 +1,5 @@
 const { Router } = require("express");
 const router = Router();
-const config = require("config");
-const jwt = require("jsonwebtoken");
 const logger = require("../logger/Logger");
 const userController = require("../controller/users");
 
@@ -15,13 +13,9 @@ router.post(
 
   async (req, res) => {
     try {
-      const token = req.cookies.token;
+      const user = await userController.getUser(req, res);
 
-      let userId = await userController.getUserId(req, token);
-
-      if (!userId) {
-        logger.error(`${req.url}: Пользователь не найден`);
-
+      if (!user) {
         return res.status(400).json({
           message: "User not found",
           errors: { login: "Пользователь не найден" },
@@ -29,7 +23,7 @@ router.post(
       }
 
       const userResults = await Results.findAll({
-        where: { userId },
+        where: { userId: user.id },
         order: [["updatedAt", "DESC"]],
       });
       if (!userResults) {
@@ -37,7 +31,7 @@ router.post(
         return res.status(400).json({ message: "Не удалось найти данные" });
       }
 
-      logger.info(`${req.url}: Нашел результаты для id: ${userId}`);
+      logger.info(`${req.url}: Нашел результаты для id: ${user.id}`);
 
       res.status(200).json({ data: userResults });
     } catch (error) {
@@ -55,17 +49,21 @@ router.post(
   async (req, res) => {
     console.log("Request Id:", req.params.id);
     try {
-      const param = req.params.id;
+      const id = req.params.id;
 
-      const userResults = await Results.findByPk(param);
+      const userResults = await Results.findByPk(id);
       if (!userResults) {
-        logger.info(`${req.url}: Нет данных для ${param}`);
+        logger.info(`${req.url}: Нет данных для ${id}`);
         return res.status(400).json({ message: "Не удалось найти данные" });
       }
 
-      logger.info(`${req.url}: Нашел результаты для id: ${param}`);
+      logger.info(`${req.url}: Нашел результаты для id: ${id}`);
 
-      res.status(200).json({ data: userResults });
+      const user = await Users.findByPk(data.userId);
+
+      res
+        .status(200)
+        .json({ data: userResults, userName: user?.userName ?? "" });
     } catch (error) {
       logger.error(`${req.url}: ошибка:${error.message ?? ""} ...`);
       logger.error(error);
@@ -80,23 +78,9 @@ router.get(
 
   async (req, res) => {
     try {
-      const token = req.cookies.token;
-
-      if (!token) {
-        return res.status(200).json({ message: "No authorization" });
-      }
-
-      const decoded = jwt.verify(token, config.get("jwtSecret"));
-      if (!decoded.userId) {
-        res.clearCookie("token");
-        return res.status(200).json({ message: "User not found" });
-      }
-      const userId = decoded.userId;
-
-      const user = await Users.findByPk(userId);
+      const user = await userController.getUser(req, res);
 
       if (!user) {
-        res.clearCookie("token");
         return res.status(200).json({ message: "User not found" });
       }
 

@@ -1,8 +1,7 @@
 const { Router } = require("express");
 const router = Router();
-const config = require("config");
-const jwt = require("jsonwebtoken");
 const logger = require("../logger/Logger");
+const userController = require("../controller/users");
 
 const { check, validationResult } = require("express-validator");
 
@@ -70,29 +69,9 @@ router.post(
         timer,
       };
 
-      const token = req.cookies.token;
-      const getUserId = async (token) => {
-        if (!token) {
-          logger.info(`${req.url}: Сохранение результатов без токена`);
-          return null;
-        }
+      const user = await userController.getUser(req, res);
 
-        const decoded = jwt.verify(token, config.get("jwtSecret"));
-        if (!decoded.userId) {
-          logger.info(`${req.url}: Не найден userId`);
-          return null;
-        }
-        const userId = decoded.userId;
-
-        const user = await Users.findByPk(userId);
-        if (!user) {
-          logger.info(`${req.url}: Не найден пользователь`);
-          return null;
-        }
-        return userId;
-      };
-
-      let userId = await getUserId(token);
+      const userId = user?.id;
 
       if (!userId && req.body.uuid) {
         logger.info(

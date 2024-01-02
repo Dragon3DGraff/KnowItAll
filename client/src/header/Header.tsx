@@ -5,7 +5,8 @@ import { UserContext } from "../App";
 import { UserName } from "../user/UserName";
 import { setAnonimId } from "../api/setAnonimId";
 import { Role, User } from "../types/api.types";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 type Props = {
   onNameChanged: (user: User | null) => void;
@@ -13,6 +14,7 @@ type Props = {
 export const Header = ({ onNameChanged }: Props) => {
   const user = useContext(UserContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!user?.userName) {
@@ -34,7 +36,14 @@ export const Header = ({ onNameChanged }: Props) => {
       minWidth={"250px"}
     >
       <Box px={3}>
-        <Button onClick={() => navigate("/statistics")}>Достижения</Button>
+        {location.pathname !== "/" ? (
+          <Button onClick={() => navigate("/")}>
+            <ArrowBackIcon sx={{ mr: 1 }} />
+            Решать
+          </Button>
+        ) : (
+          <Button onClick={() => navigate("/statistics")}>Достижения</Button>
+        )}
         {user?.role === Role.ADMIN && (
           <Button onClick={() => navigate("/admin")}>Админка</Button>
         )}

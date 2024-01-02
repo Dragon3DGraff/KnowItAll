@@ -1,7 +1,6 @@
-import { Button, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { getStatistics } from "../api/getStatistics";
-import { useNavigate } from "react-router-dom";
 import { MultiplationsStatistics } from "../types/multiplication.types";
 
 import Box from "@mui/material/Box";
@@ -93,8 +92,6 @@ function Row(props: { row: MultiplationsStatistics }) {
 export const Statistics = () => {
   const user = useContext(UserContext);
 
-  const navigate = useNavigate();
-
   const [results, setResults] = useState<MultiplationsStatistics[]>([]);
   useEffect(() => {
     user &&
@@ -134,13 +131,6 @@ export const Statistics = () => {
 
   return (
     <Stack>
-      <Button
-        onClick={() => navigate("/")}
-        sx={{ maxWidth: "fit-content" }}
-        variant="contained"
-      >
-        Решать примеры
-      </Button>
       <Typography variant="h5">Статистика</Typography>
       <Stack alignItems={"flex-end"} px={4}>
         <Typography>Сколько раз решал: {totalSolved}</Typography>

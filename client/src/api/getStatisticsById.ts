@@ -3,7 +3,9 @@ import { API_URL } from "../utils/constants";
 
 export const getStatisticsById = async (
   id: string
-): Promise<MultiplationsStatistics | { error: string }> => {
+): Promise<
+  { data: MultiplationsStatistics; userName: string } | { error: string }
+> => {
   try {
     const res = await fetch(API_URL + `/stat/statistics/${id}`, {
       method: "POST",
@@ -14,7 +16,7 @@ export const getStatisticsById = async (
     });
     if (res.status === 200) {
       const body = await res.json();
-      return body.data;
+      return body;
     }
     return { error: "Ошибка получения статистики" };
   } catch (error) {

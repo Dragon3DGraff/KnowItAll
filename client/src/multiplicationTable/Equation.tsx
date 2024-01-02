@@ -1,8 +1,6 @@
-import { Box, Input, Stack, Tooltip, Typography, styled } from "@mui/material";
+import { Box, Input, Stack, Typography, styled } from "@mui/material";
 import { Sign, Result } from "../types/multiplication.types";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import { useState } from "react";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 const StyledInput = styled(Input)(() => ({
   "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
@@ -33,8 +31,6 @@ export const Equation = ({
   id,
   userAnswer,
 }: Props) => {
-  const [inputValue, setInputValue] = useState<number>();
-
   const onInputChange = (e: { target: { value: string } }) => {
     onSolve &&
       onSolve({
@@ -46,7 +42,6 @@ export const Equation = ({
         answer,
         id,
       });
-    setInputValue(Number.parseFloat(e.target.value));
   };
 
   const getColor = () => {
@@ -65,13 +60,15 @@ export const Equation = ({
       my={0.5}
     >
       <Typography>{number1}</Typography>
-      <Typography px={0.5}>{actionSign}</Typography>
+      <Typography px={0.5}>
+        <span>{actionSign}</span>
+      </Typography>
       <Typography>{number2}</Typography>
       <Typography px={0.5}>=</Typography>
       <Box width={"45px"} mr={1} border={`1px solid darkgrey`}>
         {userAnswer ? (
           <Typography px={0.5} color={getColor()}>
-            {inputValue}
+            {userAnswer}
           </Typography>
         ) : (
           <StyledInput
@@ -94,15 +91,15 @@ export const Equation = ({
         )}
       </Box>
       {userAnswer && (
-        <>
+        <Box width={"20px"}>
           {userAnswer === answer ? (
             <TaskAltIcon color={getColor()} />
           ) : (
-            <Tooltip title={answer} disableInteractive>
-              <ReportProblemIcon color={getColor()} />
-            </Tooltip>
+            <Typography fontWeight={700} color={getColor()}>
+              {answer}
+            </Typography>
           )}
-        </>
+        </Box>
       )}
     </Stack>
   );

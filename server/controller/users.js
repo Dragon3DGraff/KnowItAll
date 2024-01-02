@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../models");
 const Users = db.Users;
 
-const getUserId = async (req) => {
+const getUser = async (req, res) => {
   const token = req.cookies.token;
   if (!token) {
     logger.info(`${req.url}: Нет токена`);
@@ -14,6 +14,7 @@ const getUserId = async (req) => {
 
   const decoded = jwt.verify(token, config.get("jwtSecret"));
   if (!decoded.userId) {
+    res.clearCookie("token");
     logger.info(`${req.url}: Не найден userId`);
     return null;
   }
@@ -21,10 +22,11 @@ const getUserId = async (req) => {
 
   const user = await Users.findByPk(userId);
   if (!user) {
+    res.clearCookie("token");
     logger.info(`${req.url}: Не найден пользователь`);
     return null;
   }
-  return userId;
+  return user;
 };
 
-module.exports = { getUserId };
+module.exports = { getUser };
