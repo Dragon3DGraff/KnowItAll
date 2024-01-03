@@ -7,6 +7,10 @@ export const calcEstimate = (
 ) => {
   const percent = correctCount / totalCount;
 
+  if (percent <= 0.49) {
+    return 2;
+  }
+
   let start = 0;
 
   if (timer) {
@@ -14,18 +18,11 @@ export const calcEstimate = (
       start = -1;
     }
 
-    if (timer >= TIMER_STEPS.three && timer < TIMER_STEPS.end) {
+    if (timer >= TIMER_STEPS.three && timer <= TIMER_STEPS.end) {
       start = -2;
     }
-
-    if (timer >= 180) {
-      start = -3;
-    }
   }
 
-  if (percent <= 0.49) {
-    return 2;
-  }
   if (percent >= 0.9) {
     return start + 5;
   }
