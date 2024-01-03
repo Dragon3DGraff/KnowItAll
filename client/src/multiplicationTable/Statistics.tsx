@@ -20,6 +20,7 @@ import format from "date-fns/format";
 import { ru } from "date-fns/locale";
 import { Hourglass } from "react-loader-spinner";
 import { useUser } from "../hooks/useUser";
+import { secondsToMin } from "../utils/secondsToMin";
 
 function Row(props: { row: MultiplationsStatistics }) {
   const { row } = props;
@@ -45,7 +46,7 @@ function Row(props: { row: MultiplationsStatistics }) {
             locale: ru,
           })}
         </TableCell>
-        <TableCell align="right">{row.timer}</TableCell>
+        <TableCell align="right">{secondsToMin(row.timer)}</TableCell>
         <TableCell align="right">{row.solvedCount}</TableCell>
         <TableCell align="right">{row.correctCount}</TableCell>
         <TableCell align="right">{row.incorrectCount}</TableCell>
