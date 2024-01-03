@@ -1,8 +1,7 @@
 const { Router } = require("express");
 const router = Router();
-const config = require("config");
-const jwt = require("jsonwebtoken");
 const logger = require("../logger/Logger");
+const userController = require("../controller/users");
 
 const { check, validationResult } = require("express-validator");
 
@@ -70,29 +69,9 @@ router.post(
         timer,
       };
 
-      const token = req.cookies.token;
-      const getUserId = async (token) => {
-        if (!token) {
-          logger.info(`${req.url}: Сохранение результатов без токена`);
-          return null;
-        }
+      const user = await userController.getUser(req, res);
 
-        const decoded = jwt.verify(token, config.get("jwtSecret"));
-        if (!decoded.userId) {
-          logger.info(`${req.url}: Не найден userId`);
-          return null;
-        }
-        const userId = decoded.userId;
-
-        const user = await Users.findByPk(userId);
-        if (!user) {
-          logger.info(`${req.url}: Не найден пользователь`);
-          return null;
-        }
-        return userId;
-      };
-
-      let userId = await getUserId(token);
+      let userId = user?.id;
 
       if (!userId && req.body.uuid) {
         logger.info(
@@ -122,10 +101,10 @@ router.post(
       }
 
       data.userId = userId;
-      await Results.create(data);
+      const created = await Results.create(data);
       logger.info(`${req.url}: сохранил результаты для id: ${userId}`);
 
-      res.status(201).json({ message: "resuts Saved!" });
+      res.status(201).json({ message: "resuts Saved!", id: created.id });
     } catch (error) {
       logger.error(`${req.url}: ошибка:${error.message ?? ""} ...`);
       logger.error(error);

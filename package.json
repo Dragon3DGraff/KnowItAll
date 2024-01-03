@@ -23,11 +23,6 @@
   },
   "homepage": "https://github.com/Dragon3DGraff/KnowItAll#readme",
   "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "@mui/lab": "^5.0.0-alpha.158",
-    "@mui/material": "^5.15.2",
-    "concurrently": "^8.2.2",
-    "react-loader-spinner": "^6.1.6"
+    "concurrently": "^8.2.2"
   }
 }

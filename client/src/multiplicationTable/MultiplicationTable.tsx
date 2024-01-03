@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { numbers } from "../calc/getMultiplicationTable";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   Stack,
   Switch,
   Typography,
+  styled,
 } from "@mui/material";
 import { Equation } from "./Equation";
 import {
@@ -26,7 +27,20 @@ import { StorageHelper } from "../utils/StorageHelper";
 import { SELECTED_NUMBERS } from "../utils/constants";
 import { sendResults } from "../api/sendResults";
 import { Header } from "./Header";
-import { UserContext } from "../App";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { secondsToMin } from "../utils/secondsToMin";
+import { getStatisticsById } from "../api/getStatisticsById";
+import { useUser } from "../hooks/useUser";
+
+const TableGrid = styled(Stack)(({ theme }) => ({
+  maxHeight: "380px",
+  [theme.breakpoints.down("md")]: {
+    maxHeight: "500px",
+  },
+  [theme.breakpoints.down("sm")]: {
+    maxHeight: "700px",
+  },
+}));
 
 type Props = {
   table: MultiplicationTable;
@@ -40,9 +54,34 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [started, setStarted] = useState<boolean>(false);
   const [finished, setFinished] = useState<boolean>(false);
   const [task, setTask] = useState<TableItem[]>([]);
-  const user = useContext(UserContext);
+  const { user } = useUser();
   const [mode, setMode] = useState<Mode>(Mode.EXAM);
-  const [isSended, setIsSended] = useState<boolean>(false);
+  const [sended, setSended] = useState<{
+    id: string;
+    timer: number;
+  } | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [shared, setShared] = useState<{
+    userName: string;
+    timer: number;
+  } | null>(null);
+
+  const navigate = useNavigate();
+
+  const sharedId = searchParams.get("share");
+
+  useEffect(() => {
+    if (sharedId && results.length === 0) {
+      getStatisticsById(sharedId).then((res) => {
+        if (!("error" in res)) {
+          setResults(res.data.results);
+          setShared({ userName: res.userName, timer: res.data.timer });
+        } else {
+          onReplay();
+        }
+      });
+    }
+  }, [sharedId]);
 
   const handleCheckNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -104,7 +143,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setFinished(false);
     setTask([]);
     setStarted(false);
-    setIsSended(false);
+    setSended(null);
+    setShared(null);
+    navigate("/");
   };
 
   const surrender = () => {
@@ -112,9 +153,47 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     sendResults(0, [], mode, user?.userName);
   };
 
+  useEffect(() => {
+    onReplay();
+  }, [user]);
+
+  useEffect(() => {
+    if (sended) {
+      if (user) {
+        setSearchParams({ share: sended.id });
+
+        const totalSolved = results.length;
+        const correctCount = results.filter((item) => item.result).length;
+        const title =
+          mode === Mode.EXAM
+            ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
+                sended.timer
+              )}!`
+            : `Я решил(а) правильно ${correctCount} из ${totalSolved}!`;
+
+        window.Ya.share2("ya", {
+          theme: {
+            services:
+              "vkontakte,telegram,whatsapp,odnoklassniki,twitter,viber,skype,linkedin,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
+            bare: false,
+            limit: 3,
+          },
+          content: {
+            url: `
+            https://know-it-all.ru?share=${sended.id}`,
+            title,
+          },
+        });
+      }
+    }
+  }, [sended]);
+
   const onTimerFinished = async (timer: number) => {
-    await sendResults(timer, results, mode, user?.userName);
-    setIsSended(true);
+    const res = await sendResults(timer, results, mode, user?.userName);
+
+    if (res?.ok) {
+      setSended({ id: res.id, timer });
+    }
   };
 
   const onModeChange = () => {
@@ -128,14 +207,21 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const allFilled = results.length === task.length;
 
   return (
-    <Stack alignItems={"center"}>
+    <Stack alignItems={"center"} p={0} my={0}>
       <Header
         started={started}
         finished={finished}
         onFinish={onTimerFinished}
         mode={mode}
       />
-
+      {shared && shared?.userName && (
+        <Stack>
+          <Typography>Результаты пользователя {shared.userName}</Typography>
+          <Typography color={"#0000FF"} fontWeight={700}>
+            Время {secondsToMin(shared.timer)}
+          </Typography>
+        </Stack>
+      )}
       <Box
         sx={{
           display: "flex",
@@ -144,7 +230,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         }}
       >
         <Stack direction={"row"}>
-          {finished && (
+          {(finished || (shared && results)) && (
             <Stack
               direction={"row"}
               alignItems={"center"}
@@ -158,12 +244,14 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               <Typography color={"#FF0000"}>
                 Неправильно {results.filter((item) => !item.result).length}
               </Typography>
-              <Button onClick={onReplay}>Заново</Button>
+              <Button onClick={onReplay} variant="contained">
+                {shared ? "Решу лучше" : "Заново"}
+              </Button>
             </Stack>
           )}
         </Stack>
 
-        {!started && (
+        {!started && !shared && (
           <Stack>
             <Typography variant="h6">
               {`${
@@ -175,15 +263,6 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               <Box alignSelf={"center"} width={"250px"}>
                 <FormGroup key={"all"}>
                   <Stack direction={"row"} gap={2}>
-                    {/* {mode === Mode.EXAM ? (
-                      <Box width={"40px"} height={"40px"}>
-                        <img src="./super.png" />
-                      </Box>
-                    ) : (
-                      <Box width={"40px"} height={"40px"}>
-                        <img src="./itak.png" />
-                      </Box>
-                    )} */}
                     <FormControlLabel
                       control={
                         <Switch
@@ -205,7 +284,12 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
                   />
                 </FormGroup>
               </Box>
-              <Stack direction={"row"} flexWrap={"wrap"} alignItems={"center"}>
+              <Stack
+                direction={"row"}
+                flexWrap={"wrap"}
+                alignItems={"center"}
+                px={2}
+              >
                 {numbers.map((number) => (
                   <FormGroup key={number}>
                     <FormControlLabel
@@ -225,8 +309,23 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           </Stack>
         )}
       </Box>
-      {started ? (
-        <Stack flexWrap={"wrap"} maxHeight={"360px"} mt={1}>
+      {shared ? (
+        <TableGrid flexWrap={"wrap"} mt={1}>
+          {results.map((result, i) => (
+            <Equation
+              key={result.id}
+              id={result.id}
+              userAnswer={result.userAnswer}
+              number1={result.number1}
+              number2={result.number2}
+              actionSign={result.actionSign}
+              answer={result.answer}
+              tabIndex={i}
+            />
+          ))}
+        </TableGrid>
+      ) : started ? (
+        <TableGrid flexWrap={"wrap"} mt={1}>
           {finished && results.length
             ? results.map((result, i) => (
                 <Equation
@@ -255,16 +354,18 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               ))}
           {allFilled && (
             <Box my={1}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={onFinished}
-                disabled={isSended}
-              >
-                Готово!
-              </Button>
+              {!finished && (
+                <Button variant="contained" size="large" onClick={onFinished}>
+                  Готово!
+                </Button>
+              )}
             </Box>
           )}
+          {/* {sended && ( */}
+          <Box py={1}>
+            <div id="ya" />
+          </Box>
+          {/* )} */}
           {!allFilled && !finished && (
             <Box my={1} mt={"auto"}>
               <Button onClick={surrender} sx={{ width: "fit-content" }}>
@@ -272,7 +373,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               </Button>
             </Box>
           )}
-        </Stack>
+        </TableGrid>
       ) : (
         <Box my={2}>
           <Button

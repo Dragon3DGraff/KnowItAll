@@ -3,6 +3,7 @@ const router = Router();
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const logger = require("../logger/Logger");
+const userController = require("../controller/users");
 
 const bcrypt = require("bcryptjs");
 const { check, validationResult } = require("express-validator");
@@ -92,7 +93,9 @@ router.post(
         role: "student",
       });
       if (data) {
-        logger.info(`Account created! id: ${data.id}, userName: ${data.userName}`);
+        logger.info(
+          `Account created! id: ${data.id}, userName: ${data.userName}`
+        );
 
         res
           .status(201)
@@ -161,7 +164,7 @@ router.post(
 
       logger.info(`${req.url}: id: ${user.id} ${user.userName} залогинился`);
 
-      res.json({ userId: user.id, userName: user.userName });
+      res.json({ userId: user.id, userName: user.userName, role: user.role });
     } catch (error) {
       res.status(500).json({ message: "ERROR" });
       logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
@@ -186,7 +189,7 @@ router.post("/logout", async (req, res) => {
 
     logger.info(`${req.url}: ${userId} разлогинился`);
 
-    res.json({ userId: undefined, userName: undefined });
+    res.json({ userId: undefined, userName: undefined, role: undefined });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
     logger.error(`${req.url}: Ошибка:${error.message ?? ""} ...`);
@@ -196,26 +199,14 @@ router.post("/logout", async (req, res) => {
 
 router.post("/checkAuth", async (req, res) => {
   try {
-    const token = req.cookies.token;
-
-    if (!token) {
-      return res.status(200).json({ message: "No authorization" });
-    }
-
-    const decoded = jwt.verify(token, config.get("jwtSecret"));
-    if (!decoded.userId) {
-      res.clearCookie("token");
-      return res.status(200).json({ message: "User not found" });
-    }
-    const userId = decoded.userId;
-
-    const user = await Users.findByPk(userId);
+    const user = await userController.getUser(req, res);
 
     if (!user) {
-      res.clearCookie("token");
       return res.status(200).json({ message: "User not found" });
     }
-    res.status(200).json({ userId, userName: user.userName });
+
+    const userId = user.id;
+    res.status(200).json({ userId, userName: user.userName, role: user.role });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
     logger.error(`${req.url}: Ошибка проверки:${error.message ?? ""} ...`);

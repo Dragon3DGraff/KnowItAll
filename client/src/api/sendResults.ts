@@ -25,7 +25,7 @@ export const sendResults = async (
         data.uuid = anonimUUID;
       }
     }
-    await fetch(API_URL + "api/data/results", {
+   const res = await fetch(API_URL + "/data/results", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,6 +33,13 @@ export const sendResults = async (
       },
       body: JSON.stringify(data),
     });
+
+    const answer = await res.json();
+    if(res.status === 201){
+      return { ok: true, id: answer.id };
+    }
+
+    return { ok: false, errors: answer };
   } catch (error) {
     console.log(error);
   }

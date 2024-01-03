@@ -1,23 +1,26 @@
 import { Box, Button, Stack } from "@mui/material";
-import { Statistics } from "./Statistics";
-import { useContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { checkIsAuth } from "../api/checkIsAuth";
-import { UserContext } from "../App";
 import { UserName } from "../user/UserName";
 import { setAnonimId } from "../api/setAnonimId";
+import { User } from "../types/api.types";
+import { useLocation, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useUser } from "../hooks/useUser";
 
 type Props = {
-  onNameChanged: (userName?: string) => void;
+  onNameChanged: (user: User | null) => void;
 };
 export const Header = ({ onNameChanged }: Props) => {
-  const [statisticsTitle, setStatisticsTitle] = useState("");
-  const user = useContext(UserContext);
+  const { user, isAdmin } = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!user?.userName) {
       checkIsAuth().then((res) => {
-        if (res.ok) {
-          onNameChanged(res.userName);
+        if (!res.error) {
+          onNameChanged(res);
         } else {
           setAnonimId();
         }
@@ -30,23 +33,20 @@ export const Header = ({ onNameChanged }: Props) => {
       direction={"row"}
       width={"100vw"}
       justifyContent={"space-between"}
-      minWidth={" 400px"}
+      minWidth={"250px"}
     >
       <Box px={3}>
-        <Button onClick={() => setStatisticsTitle("Достижения")}>
-          Достижения
-        </Button>
-        {/* <Button onClick={() => setStatisticsTitle("Статистика")}>
-          Статистика
-        </Button> */}
-        <Button onClick={() => setStatisticsTitle("Награды")}>Награды</Button>
+        {location.pathname !== "/" ? (
+          <Button onClick={() => navigate("/")}>
+            <ArrowBackIcon sx={{ mr: 1 }} />
+            Решать
+          </Button>
+        ) : (
+          <Button onClick={() => navigate("/statistics")}>Достижения</Button>
+        )}
+        {isAdmin && <Button onClick={() => navigate("/admin")}>Админка</Button>}
       </Box>
       <UserName onNameChanged={onNameChanged} />
-      <Statistics
-        open={Boolean(statisticsTitle)}
-        onClose={() => setStatisticsTitle("")}
-        title={statisticsTitle}
-      />
     </Stack>
   );
 };

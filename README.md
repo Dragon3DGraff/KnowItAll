@@ -59,12 +59,13 @@
 ## О проекте
 
 [![Product Name Screen Shot][product-screenshot]](https://know-it-all.ru/)
+[![Product Name Screen Shot][product-screenshot2]](https://know-it-all.ru/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Сделано с помощью
 
-- [![React][React.js]][React-url]
+[![React][React.js]][React-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -91,11 +92,11 @@
     ```
 3.  Разработка
     ```sh
-    npm run start;
+    npm run start
     ```
 4.  сборка
     ```sh
-    npm run build;
+    npm run build
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -159,5 +160,6 @@ Project Link: [https://github.com/Dragon3DGraff/KnowItAll](https://github.com/Dr
 [license-shield]: https://img.shields.io/github/license/Dragon3DGraff/KnowItAll.svg?style=for-the-badge
 [license-url]: https://github.com/Dragon3DGraff/KnowItAll/blob/master/LICENSE.txt
 [product-screenshot]: images/preview.PNG
+[product-screenshot2]: images/preview2.PNG
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/

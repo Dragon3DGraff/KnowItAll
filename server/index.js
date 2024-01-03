@@ -45,6 +45,7 @@ app.use((req, res, next) => {
 });
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/data", require("./routes/results.routes"));
+app.use("/api/stat", require("./routes/statistic.routes"));
 
 const PORT = config.get("port");
 
@@ -61,7 +62,7 @@ async function start() {
     await db.sequelize.authenticate();
     logger.info("sequelize: успешно подключился к БД");
   } catch (error) {
-    logger.error("sequelize: Не удало подключиться к БД: ...");
+    logger.error("sequelize: Не удалось подключиться к БД: ...");
     logger.error(error);
   }
   try {

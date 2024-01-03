@@ -25,3 +25,18 @@ export enum Mode {
   EXAM = "exam",
   TRAIN = "train",
 }
+
+export type MultiplationsStatistics = {
+  correctCount: number;
+  createdAt: string;
+  date: string;
+  id: number;
+  incorrectCount: number;
+  mode: Mode;
+  numbers: number;
+  results: Result[];
+  solvedCount: number;
+  timer: number;
+  updatedAt: string;
+  userId: string;
+};

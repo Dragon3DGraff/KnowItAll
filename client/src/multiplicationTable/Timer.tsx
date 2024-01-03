@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, styled } from "@mui/material";
 import { secondsToMin } from "../utils/secondsToMin";
 import { useState, useEffect } from "react";
 import TagFacesIcon from "@mui/icons-material/TagFaces";
@@ -8,6 +8,10 @@ import MoodBadIcon from "@mui/icons-material/MoodBad";
 import { createPortal } from "react-dom";
 import { TIMER_STEPS } from "../utils/constants";
 import { Mode } from "../types/multiplication.types";
+
+const TimerDiv = styled(Box)(() => ({
+  left: "calc( 50vw - 57px)",
+}));
 
 type Props = {
   started: boolean;
@@ -79,31 +83,34 @@ export const Timer = ({ started, finished, mode, onFinish }: Props) => {
     return smile;
   };
   return createPortal(
-    <Stack
-      direction={"row"}
-      alignItems={"center"}
-      justifyContent={"center"}
+    <TimerDiv
       position={"absolute"}
-      top={25}
-      left={100}
-      p={0.5}
+      top={"40px"}
+      px={1}
+      py={0.5}
       bgcolor={"#fff"}
       borderRadius={"26px"}
-      ml={2}
+      border={"3px solid #1976d2"}
+      boxShadow={"6px 10px 10px"}
     >
       {mode === Mode.EXAM ? (
-        <>
-          <Box mr={1}>{getTimerSmile(timer)}</Box>
+        <Stack
+          direction={"row"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          gap={1}
+        >
+          {getTimerSmile(timer)}
           <Typography variant="h5" color={getTimerColor(timer)}>
             {secondsToMin(timer)}
           </Typography>
-        </>
+        </Stack>
       ) : (
         <Typography variant="h5" color={"lightgray"}>
           {secondsToMin(0)}
         </Typography>
       )}
-    </Stack>,
+    </TimerDiv>,
     document.body
   );
 };
