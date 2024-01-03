@@ -40,7 +40,7 @@ export const Registration = ({
   });
 
   const [error, setError] = useState<string>();
-  const [loginEror, setLoginError] = useState<boolean>();
+  const [loginError, setLoginError] = useState<boolean>();
   const [isRegistered, setIsRegistered] = useState<boolean>();
   const [isLoading, setIsLoading] = useState<boolean>();
 
@@ -100,7 +100,7 @@ export const Registration = ({
   };
 
   const onSuccess = () => {
-    if (loginEror) {
+    if (loginError) {
       onLoginError();
     }
     onCloseHandler();
