@@ -56,7 +56,10 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [task, setTask] = useState<TableItem[]>([]);
   const { user } = useUser();
   const [mode, setMode] = useState<Mode>(Mode.EXAM);
-  const [isSended, setIsSended] = useState<boolean>(false);
+  const [sended, setSended] = useState<{
+    id: string;
+    timer: number;
+  } | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [shared, setShared] = useState<{
     userName: string;
@@ -73,6 +76,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         if (!("error" in res)) {
           setResults(res.data.results);
           setShared({ userName: res.userName, timer: res.data.timer });
+        } else {
+          onReplay();
         }
       });
     }
@@ -138,7 +143,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setFinished(false);
     setTask([]);
     setStarted(false);
-    setIsSended(false);
+    setSended(null);
     setShared(null);
     navigate("/");
   };
@@ -148,20 +153,21 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     sendResults(0, [], mode, user?.userName);
   };
 
-  const onTimerFinished = async (timer: number) => {
-    const res = await sendResults(timer, results, mode, user?.userName);
-    setIsSended(true);
+  useEffect(() => {
+    onReplay();
+  }, [user]);
 
-    if (res?.ok) {
+  useEffect(() => {
+    if (sended) {
       if (user) {
-        setSearchParams({ share: res.id });
+        setSearchParams({ share: sended.id });
 
         const totalSolved = results.length;
         const correctCount = results.filter((item) => item.result).length;
         const title =
           mode === Mode.EXAM
             ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
-                timer
+                sended.timer
               )}!`
             : `Я решил(а) правильно ${correctCount} из ${totalSolved}!`;
 
@@ -174,11 +180,19 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           },
           content: {
             url: `
-            https://know-it-all.ru?share=${res.id}`,
+            https://know-it-all.ru?share=${sended.id}`,
             title,
           },
         });
       }
+    }
+  }, [sended]);
+
+  const onTimerFinished = async (timer: number) => {
+    const res = await sendResults(timer, results, mode, user?.userName);
+
+    if (res?.ok) {
+      setSended({ id: res.id, timer });
     }
   };
 
@@ -200,6 +214,14 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         onFinish={onTimerFinished}
         mode={mode}
       />
+      {shared && shared?.userName && (
+        <Stack>
+          <Typography>Результаты пользователя {shared.userName}</Typography>
+          <Typography color={"#0000FF"} fontWeight={700}>
+            Время {secondsToMin(shared.timer)}
+          </Typography>
+        </Stack>
+      )}
       <Box
         sx={{
           display: "flex",
@@ -207,14 +229,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           justifyContent: "flex-start",
         }}
       >
-        {shared?.userName && (
-          <Stack>
-            <Typography>Результаты пользователя {shared.userName}</Typography>
-            <Typography>Время {secondsToMin(shared.timer)}</Typography>
-          </Stack>
-        )}
         <Stack direction={"row"}>
-          {(finished || shared) && (
+          {(finished || (shared && results)) && (
             <Stack
               direction={"row"}
               alignItems={"center"}
@@ -228,14 +244,14 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               <Typography color={"#FF0000"}>
                 Неправильно {results.filter((item) => !item.result).length}
               </Typography>
-              <Button onClick={onReplay}>
+              <Button onClick={onReplay} variant="contained">
                 {shared ? "Решу лучше" : "Заново"}
               </Button>
             </Stack>
           )}
         </Stack>
 
-        {!started && (
+        {!started && !shared && (
           <Stack>
             <Typography variant="h6">
               {`${
@@ -293,20 +309,22 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           </Stack>
         )}
       </Box>
-      {shared &&
-        results.map((result, i) => (
-          <Equation
-            key={result.id}
-            id={result.id}
-            userAnswer={result.userAnswer}
-            number1={result.number1}
-            number2={result.number2}
-            actionSign={result.actionSign}
-            answer={result.answer}
-            tabIndex={i}
-          />
-        ))}
-      {started ? (
+      {shared ? (
+        <TableGrid flexWrap={"wrap"} mt={1}>
+          {results.map((result, i) => (
+            <Equation
+              key={result.id}
+              id={result.id}
+              userAnswer={result.userAnswer}
+              number1={result.number1}
+              number2={result.number2}
+              actionSign={result.actionSign}
+              answer={result.answer}
+              tabIndex={i}
+            />
+          ))}
+        </TableGrid>
+      ) : started ? (
         <TableGrid flexWrap={"wrap"} mt={1}>
           {finished && results.length
             ? results.map((result, i) => (
@@ -336,21 +354,18 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               ))}
           {allFilled && (
             <Box my={1}>
-              {!isSended && (
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={onFinished}
-                  disabled={isSended}
-                >
+              {!finished && (
+                <Button variant="contained" size="large" onClick={onFinished}>
                   Готово!
                 </Button>
               )}
-              <Box py={1}>
-                <div id="ya" />
-              </Box>
             </Box>
           )}
+          {/* {sended && ( */}
+          <Box py={1}>
+            <div id="ya" />
+          </Box>
+          {/* )} */}
           {!allFilled && !finished && (
             <Box my={1} mt={"auto"}>
               <Button onClick={surrender} sx={{ width: "fit-content" }}>

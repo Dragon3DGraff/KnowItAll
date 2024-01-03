@@ -71,7 +71,7 @@ router.post(
 
       const user = await userController.getUser(req, res);
 
-      const userId = user?.id;
+      let userId = user?.id;
 
       if (!userId && req.body.uuid) {
         logger.info(

@@ -59,7 +59,7 @@ router.post(
 
       logger.info(`${req.url}: Нашел результаты для id: ${id}`);
 
-      const user = await Users.findByPk(data.userId);
+      const user = await Users.findByPk(userResults.userId);
 
       res
         .status(200)
