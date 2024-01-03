@@ -167,8 +167,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         const title =
           mode === Mode.EXAM
             ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
-                sended.timer
-              )}!`
+              sended.timer
+            )}!`
             : `Я решил(а) правильно ${correctCount} из ${totalSolved}!`;
 
         window.Ya.share2("ya", {
@@ -255,9 +255,8 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         {!started && !shared && (
           <Stack>
             <Typography variant="h6">
-              {`${
-                user?.userName ? user.userName : "Выбери"
-              }, на что будем делить и умножать`}
+              {`${user?.userName ? user.userName : "Выбери"
+                }, на что будем делить и умножать`}
             </Typography>
             <FormControl sx={{ my: 1 }} component="fieldset" variant="standard">
               <FormLabel component="legend"></FormLabel>
@@ -329,30 +328,30 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         <TableGrid flexWrap={"wrap"} mt={1}>
           {finished && results.length
             ? results.map((result, i) => (
-                <Equation
-                  key={result.id}
-                  id={result.id}
-                  userAnswer={result.userAnswer}
-                  number1={result.number1}
-                  number2={result.number2}
-                  actionSign={result.actionSign}
-                  answer={result.answer}
-                  tabIndex={i}
-                />
-              ))
+              <Equation
+                key={result.id}
+                id={result.id}
+                userAnswer={result.userAnswer}
+                number1={result.number1}
+                number2={result.number2}
+                actionSign={result.actionSign}
+                answer={result.answer}
+                tabIndex={i}
+              />
+            ))
             : task.map((tableItem, i) => (
-                <Equation
-                  key={tableItem.id}
-                  id={tableItem.id}
-                  userAnswer={undefined}
-                  number1={tableItem.number1}
-                  number2={tableItem.number2}
-                  actionSign={tableItem.actionSign}
-                  answer={tableItem.answer}
-                  tabIndex={i}
-                  onSolve={onSolve}
-                />
-              ))}
+              <Equation
+                key={tableItem.id}
+                id={tableItem.id}
+                userAnswer={undefined}
+                number1={tableItem.number1}
+                number2={tableItem.number2}
+                actionSign={tableItem.actionSign}
+                answer={tableItem.answer}
+                tabIndex={i}
+                onSolve={onSolve}
+              />
+            ))}
           {allFilled && (
             <Box my={1}>
               {!finished && (
@@ -390,7 +389,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Box>
       )}
       <Stack maxWidth={"400px"} mt={2}>
-        <img src="./nez.png" />
+        <img
+          alt="Картинка всезнайки"
+          src="./nez.png" />
       </Stack>
     </Stack>
   );
