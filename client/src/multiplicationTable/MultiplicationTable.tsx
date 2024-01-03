@@ -237,6 +237,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               gap={2}
               pl={2}
               justifyContent={"center"}
+              flexWrap={"wrap"}
             >
               <Typography color={"#2e7d32"}>
                 Правильно {results.filter((item) => item.result).length}
