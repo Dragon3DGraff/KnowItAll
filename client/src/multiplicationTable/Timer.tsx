@@ -16,10 +16,17 @@ const TimerDiv = styled(Box)(() => ({
 type Props = {
   started: boolean;
   finished: boolean;
-  onFinish: (timer: number) => void;
   mode: Mode;
+  onFinish: (timer: number) => void;
+  onTimerStop: () => void;
 };
-export const Timer = ({ started, finished, mode, onFinish }: Props) => {
+export const Timer = ({
+  started,
+  finished,
+  mode,
+  onFinish,
+  onTimerStop,
+}: Props) => {
   const [timer, setTimer] = useState<number>(0);
   const [interval, setIntervalNumber] = useState<NodeJS.Timeout>();
 
@@ -28,8 +35,9 @@ export const Timer = ({ started, finished, mode, onFinish }: Props) => {
     if (started) {
       interv = setInterval(() => {
         setTimer((prev) => {
-          if (prev + 1 === TIMER_STEPS.end) {
+          if (mode === Mode.EXAM && prev + 1 === TIMER_STEPS.end) {
             clearInterval(interv);
+            onTimerStop();
           }
           return prev + 1;
         });

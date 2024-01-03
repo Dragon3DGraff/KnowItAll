@@ -5,10 +5,17 @@ import { Mode } from "../types/multiplication.types";
 type Props = {
   started: boolean;
   finished: boolean;
-  onFinish: (timer: number) => void;
   mode: Mode;
+  onFinish: (timer: number) => void;
+  onTimerStop: () => void;
 };
-export const Header = ({ started, finished, onFinish, mode }: Props) => {
+export const Header = ({
+  started,
+  finished,
+  onFinish,
+  onTimerStop,
+  mode,
+}: Props) => {
   return (
     <Stack>
       <Typography variant="h5">Таблица умножения</Typography>
@@ -16,8 +23,9 @@ export const Header = ({ started, finished, onFinish, mode }: Props) => {
         <Timer
           started={started}
           finished={finished}
-          onFinish={onFinish}
           mode={mode}
+          onFinish={onFinish}
+          onTimerStop={onTimerStop}
         />
       )}
     </Stack>
