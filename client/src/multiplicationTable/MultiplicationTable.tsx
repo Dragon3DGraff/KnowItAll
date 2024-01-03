@@ -153,9 +153,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     sendResults(0, [], mode, user?.userName);
   };
 
-  useEffect(() => {
-    onReplay();
-  }, [user]);
+  // useEffect(() => {
+  //   onReplay();
+  // }, [user]);
 
   useEffect(() => {
     if (sended) {
