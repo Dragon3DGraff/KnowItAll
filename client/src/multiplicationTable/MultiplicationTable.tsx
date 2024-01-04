@@ -32,6 +32,7 @@ import { secondsToMin } from "../utils/secondsToMin";
 import { getStatisticsById } from "../api/getStatisticsById";
 import { useUser } from "../hooks/useUser";
 import { calcEstimate } from "../calc/calcEstimate";
+import nezSrc from '../media/images/nez.png'
 
 const TableGrid = styled(Stack)(({ theme }) => ({
   maxHeight: "380px",
@@ -428,7 +429,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         </Box>
       )}
       <Stack maxWidth={"400px"} mt={2}>
-        <img src="/nez.png?url" />
+        <img src={nezSrc} />
       </Stack>
     </Stack>
   );
