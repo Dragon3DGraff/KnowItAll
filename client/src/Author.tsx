@@ -1,6 +1,7 @@
 import { Link, Stack, Typography } from "@mui/material";
 
 export const Author = () => {
+  const data = new Date();
   return (
     <Stack padding={2} mt={"auto"} mx={"auto"} alignItems={'center'}>
       <Typography variant="caption" color="#778899">
@@ -14,7 +15,7 @@ export const Author = () => {
         </Link>
         &#187; Илья
       </Typography>
-      <Typography variant="caption">2024</Typography>
+      <Typography variant="caption">{data.getFullYear() + "г."}</Typography>
     </Stack>
   );
 };
