@@ -23,6 +23,7 @@
     "noFallthroughCasesInSwitch": true,
     "types": [
       "node",
+      "vite-plugin-pwa/client"
     ]
   },
   "include": [

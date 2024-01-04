@@ -1,9 +1,12 @@
 export const vitePWAConf = {
-    includeAssets: ['*.png', '*.svg'],
+    includeAssets: ["**/*",],
     registerType: 'autoUpdate',
     injectRegister: 'inline',
     devOptions: {
         enabled: true
+    },
+    workbox: {
+        globPatterns: ["**/*"],
     },
     manifest: {
         name: 'Всезнайка',
