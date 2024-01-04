@@ -1,5 +1,5 @@
 export const vitePWAConf = {
-    includeAssets: ['ico.svg', 'icoKnowItAll.png'],
+    includeAssets: ['*.png', '*.svg'],
     registerType: 'autoUpdate',
     injectRegister: 'inline',
     devOptions: {
