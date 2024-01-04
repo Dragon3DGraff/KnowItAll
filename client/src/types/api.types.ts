@@ -22,4 +22,18 @@ export type User = {
   role: Role;
 };
 
+export type UsersListItem = {
+  userName: string;
+  id: number;
+  role: Role;
+  registered: string;
+  solved: number;
+};
 
+export type AdminInfo = {
+  usersCount: number;
+  anonList: UsersListItem[];
+  resultsCount: number;
+  surrendeCount: number;
+  usersList: UsersListItem[];
+};

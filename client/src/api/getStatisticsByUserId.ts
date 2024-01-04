@@ -1,13 +1,11 @@
 import { MultiplationsStatistics } from "../types/multiplication.types";
 import { API_URL } from "../utils/constants";
 
-export const getStatisticsById = async (
-  id: string
-): Promise<
-  { data: MultiplationsStatistics; userName: string } | { error: string }
-> => {
+export const getStatisticsByUserId = async (
+  userId: string
+): Promise<MultiplationsStatistics[] | { error: string }> => {
   try {
-    const res = await fetch(API_URL + `/stat/statistics/result/${id}`, {
+    const res = await fetch(API_URL + `/stat/statistics/user/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
