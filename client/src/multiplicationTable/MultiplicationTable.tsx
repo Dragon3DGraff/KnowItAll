@@ -31,6 +31,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { secondsToMin } from "../utils/secondsToMin";
 import { getStatisticsById } from "../api/getStatisticsById";
 import { useUser } from "../hooks/useUser";
+import { calcEstimate } from "../calc/calcEstimate";
 
 const TableGrid = styled(Stack)(({ theme }) => ({
   maxHeight: "380px",
@@ -38,7 +39,7 @@ const TableGrid = styled(Stack)(({ theme }) => ({
     maxHeight: "500px",
   },
   [theme.breakpoints.down("sm")]: {
-    maxHeight: "700px",
+    maxHeight: "760px",
   },
 }));
 
@@ -63,8 +64,10 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [shared, setShared] = useState<{
     userName: string;
-    timer: number;
+    timer?: number;
   } | null>(null);
+
+  const [estimate, setEstimate] = useState<number | null>(null);
 
   const navigate = useNavigate();
 
@@ -75,7 +78,10 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
       getStatisticsById(sharedId).then((res) => {
         if (!("error" in res)) {
           setResults(res.data.results);
-          setShared({ userName: res.userName, timer: res.data.timer });
+          setShared({
+            userName: res.userName,
+            timer: res.data.mode === Mode.EXAM ? res.data.timer : undefined,
+          });
         } else {
           onReplay();
         }
@@ -129,12 +135,21 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
     if (taskArray.length) {
       arrayShuffle(taskArray);
-      setTask(taskArray.slice(0, 38));
+
+      const tasks = taskArray.slice(0, 38);
+      setTask(tasks);
       setStarted(true);
+      setResults(
+        tasks.map((task) => ({
+          ...task,
+          userAnswer: undefined,
+          result: false,
+        }))
+      );
     }
   };
 
-  const onFinished = async () => {
+  const onFinished = () => {
     setFinished(true);
   };
 
@@ -145,6 +160,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     setStarted(false);
     setSended(null);
     setShared(null);
+    setEstimate(null);
     navigate("/");
   };
 
@@ -153,17 +169,16 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     sendResults(0, [], mode, user?.userName);
   };
 
-  // useEffect(() => {
-  //   onReplay();
-  // }, [user]);
+  const correctCount = results.filter((item) => item.result).length;
+  const incorrectCount = results.filter((item) => !item.result).length;
+
+  const totalSolved = results.length;
 
   useEffect(() => {
-    if (sended) {
-      if (user) {
+    if (user) {
+      if (sended) {
         setSearchParams({ share: sended.id });
 
-        const totalSolved = results.length;
-        const correctCount = results.filter((item) => item.result).length;
         const title =
           mode === Mode.EXAM
             ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
@@ -189,6 +204,14 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   }, [sended]);
 
   const onTimerFinished = async (timer: number) => {
+    const totalSolved = results.length;
+    const estimate = calcEstimate(
+      correctCount,
+      totalSolved,
+      mode === Mode.EXAM ? timer : undefined
+    );
+
+    setEstimate(estimate);
     const res = await sendResults(timer, results, mode, user?.userName);
 
     if (res?.ok) {
@@ -204,22 +227,26 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     const selected = Object.values(selectedNumbers).filter(Boolean);
     return numbers.length === selected.length;
   };
-  const allFilled = results.length === task.length;
+  const allFilled =
+    results.filter((result) => result.userAnswer).length === task.length;
 
   return (
     <Stack alignItems={"center"} p={0} my={0}>
       <Header
         started={started}
         finished={finished}
-        onFinish={onTimerFinished}
         mode={mode}
+        onFinish={onTimerFinished}
+        onTimerStop={onFinished}
       />
       {shared && shared?.userName && (
         <Stack>
           <Typography>Результаты пользователя {shared.userName}</Typography>
-          <Typography color={"#0000FF"} fontWeight={700}>
-            Время {secondsToMin(shared.timer)}
-          </Typography>
+          {shared.timer && (
+            <Typography color={"#0000FF"} fontWeight={700}>
+              Время {secondsToMin(shared.timer)}
+            </Typography>
+          )}
         </Stack>
       )}
       <Box
@@ -240,11 +267,24 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
               flexWrap={"wrap"}
             >
               <Typography color={"#2e7d32"}>
-                Правильно {results.filter((item) => item.result).length}
+                Правильно {correctCount}
               </Typography>
               <Typography color={"#FF0000"}>
-                Неправильно {results.filter((item) => !item.result).length}
+                Неправильно {incorrectCount}
               </Typography>
+              {estimate && (
+                <Typography>
+                  Оценка: <span style={{ fontWeight: 800 }}>{estimate}</span>
+                </Typography>
+              )}
+              {shared && (
+                <Typography>
+                  Оценка:{" "}
+                  <span style={{ fontWeight: 800 }}>
+                    {calcEstimate(correctCount, results.length, shared.timer)}
+                  </span>
+                </Typography>
+              )}
               <Button onClick={onReplay} variant="contained">
                 {shared ? "Решу лучше" : "Заново"}
               </Button>
@@ -350,16 +390,15 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
                   actionSign={tableItem.actionSign}
                   answer={tableItem.answer}
                   tabIndex={i}
+                  isEditable
                   onSolve={onSolve}
                 />
               ))}
-          {allFilled && (
+          {allFilled && !finished && (
             <Box my={1}>
-              {!finished && (
-                <Button variant="contained" size="large" onClick={onFinished}>
-                  Готово!
-                </Button>
-              )}
+              <Button variant="contained" size="large" onClick={onFinished}>
+                Готово!
+              </Button>
             </Box>
           )}
           {/* {sended && ( */}
