@@ -93,7 +93,7 @@ export const Timer = ({
   return createPortal(
     <TimerDiv
       position={"absolute"}
-      top={"40px"}
+      top={"5px"}
       px={1}
       py={0.5}
       bgcolor={"#fff"}
