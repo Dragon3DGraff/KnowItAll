@@ -57,7 +57,7 @@ export const Statistics = () => {
   return (
     <Stack>
       <Typography variant="h5">Статистика</Typography>
-      <StatisticTable results={results} />;
+      <StatisticTable results={results} />
     </Stack>
   );
 };
