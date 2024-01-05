@@ -6,6 +6,7 @@ import { Author } from "./footer/Author";
 import { Header } from "./header/Header";
 import { User } from "./types/api.types";
 import { Outlet } from "react-router-dom";
+import { DevInfo } from "./DevInfo";
 
 export const UserContext = createContext<User | null>(null);
 
@@ -19,6 +20,7 @@ function App() {
   return (
     <UserContext.Provider value={user}>
       <Stack minHeight={"100vh"}>
+        <DevInfo />
         <Header onNameChanged={onNameChanged} />
         <Typography variant="h3" color={"maroon"} alignSelf={"center"}>
           Всезнайка
