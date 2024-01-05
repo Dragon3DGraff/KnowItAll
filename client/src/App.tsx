@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import "./App.css";
 
 import { createContext, useState } from "react";
-import { Author } from "./Author";
+import { Author } from "./footer/Author";
 import { Header } from "./header/Header";
 import { User } from "./types/api.types";
 import { Outlet } from "react-router-dom";
