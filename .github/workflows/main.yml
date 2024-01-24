@@ -6,7 +6,7 @@ env:
   DEPLOY_CLIENT_PATH: knowitall/site/client
   BUILD_CLIENT_OUTPUT: client/dist
   GAME_BUILD_CLIENT_OUTPUT: client/game/dist
-  GAME_DEPLOY_CLIENT_PATH: knowitall/site/client
+  GAME_DEPLOY_CLIENT_PATH: knowitall/site/client/game
 
 on:
   push:
