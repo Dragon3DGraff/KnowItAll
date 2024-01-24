@@ -6,7 +6,7 @@ env:
   DEPLOY_CLIENT_PATH: knowitall-dev/site/client
   BUILD_CLIENT_OUTPUT: client/dist
   GAME_BUILD_CLIENT_OUTPUT: client/game/dist
-  GAME_DEPLOY_CLIENT_PATH: knowitall-dev/site/client
+  GAME_DEPLOY_CLIENT_PATH: knowitall-dev/site/client/game
 
 on:
   push:
@@ -62,7 +62,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
           source: ${{ env.GAME_BUILD_CLIENT_OUTPUT }}
           target: ${{ env.GAME_DEPLOY_CLIENT_PATH }}
-          rm: false
+          rm: true
           strip_components: 1
 
       - name: Print Info
