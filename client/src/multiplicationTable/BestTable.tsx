@@ -50,10 +50,21 @@ export const BestTable = () => {
 
   useEffect(() => {
     if (!user) return;
-
     getBest().then((res) => {
       setResults(res);
     });
+
+    const interval = setInterval(
+      () =>
+        getBest().then((res) => {
+          setResults(res);
+        }),
+      50000
+    );
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [user]);
 
   if (!results.length) {

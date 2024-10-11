@@ -19,26 +19,25 @@ router.get(
         logger.info(`${req.url}: "User not found`);
         return res.status(200).json({ message: "User not found" });
       }
+      const users = await Users.findAll({
+        where: {
+          role: ["student", "admin"],
+        },
+      });
+      const usersMap = new Map();
+      users.forEach((item) => {
+        usersMap.set(`${item.id}`, item.userName);
+      });
 
       const best = await Results.findAll({
         where: {
           incorrectCount: 0,
           solvedCount: 38,
           numbers: ["2;3;4;5;6;7;8;9;10"],
+          userId: [...usersMap.keys()],
         },
         order: [["timer", "ASC"]],
-      });
-
-      const users = await Users.findAll({
-        where: {
-          role: ["student", "admin"],
-          id: [...new Set(best.map((item) => item.userId))],
-        },
-      });
-
-      const usersMap = new Map();
-      users.forEach((item) => {
-        usersMap.set(`${item.id}`, item.userName);
+        limit: 10,
       });
 
       const result = [];
@@ -52,7 +51,6 @@ router.get(
             id: element.userId,
           });
         }
-        if (result.length === 10) break;
       }
       // best.forEach((item) => console.log(item.numbers));
 
