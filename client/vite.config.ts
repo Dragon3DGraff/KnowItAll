@@ -10,6 +10,7 @@ export default defineConfig({
     VitePWA(vitePWAConf),
   ],
   server: {
+    open: true,
     proxy: {
       "/api": {
         target: "http://localhost:5000",
