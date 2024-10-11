@@ -46,11 +46,17 @@ app.use((req, res, next) => {
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/data", require("./routes/results.routes"));
 app.use("/api/stat", require("./routes/statistic.routes"));
+app.use("/api/stat", require("./routes/best.routes"));
 
 const PORT = config.get("port");
 
 if (process.env.NODE_ENV === "production") {
   app.use("/", express.static(path.join(__dirname, "client", "dist")));
+  app.use("/", express.static(path.join(__dirname, "client", "game", "dist")));
+
+  app.get("/game", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "game", "dist", "index.html"));
+  });
 
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));

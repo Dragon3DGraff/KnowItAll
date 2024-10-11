@@ -45,6 +45,7 @@ export const Header = ({ onNameChanged }: Props) => {
           <Button onClick={() => navigate("/statistics")}>Достижения</Button>
         )}
         {isAdmin && <Button onClick={() => navigate("/admin")}>Админка</Button>}
+        {isAdmin && <Button onClick={()=> navigate('/game')}>Игра</Button>}
       </Box>
       <UserName onNameChanged={onNameChanged} />
     </Stack>

@@ -5,9 +5,7 @@ import { createPortal } from "react-dom";
 export const DevInfo = () => {
   const isDev =
     location.hostname === "localhost" ||
-    location.hostname.includes("know-it-all.store");
-
-  console.log(location);
+    location.hostname === "know-it-all.store";
 
   if (!isDev) return null;
 
