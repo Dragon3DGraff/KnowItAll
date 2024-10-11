@@ -25,7 +25,5 @@
   "dependencies": {
     "concurrently": "^8.2.2"
   },
-  "devDependencies": {
-    "vite-plugin-pwa": "^0.17.4"
-  }
+  "devDependencies": {}
 }

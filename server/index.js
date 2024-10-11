@@ -46,6 +46,7 @@ app.use((req, res, next) => {
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/data", require("./routes/results.routes"));
 app.use("/api/stat", require("./routes/statistic.routes"));
+app.use("/api/stat", require("./routes/best.routes"));
 
 const PORT = config.get("port");
 
