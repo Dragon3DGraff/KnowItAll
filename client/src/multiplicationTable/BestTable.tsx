@@ -1,20 +1,20 @@
 import { Stack, Typography } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
 
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { secondsToMin } from "../utils/secondsToMin";
-import { useUser } from "../hooks/useUser";
 import { getBest } from "../api/getBest";
+import { useUser } from "../hooks/useUser";
+import { secondsToMin } from "../utils/secondsToMin";
 
 function Row(props: {
   row: { name: string; timer: number; id: string };
@@ -79,8 +79,11 @@ export const BestTable = () => {
             justifyContent={"space-between"}
             alignItems={"center"}
             px={2}
+            padding={1}
           >
-            <Typography variant="button">Лучшие результаты</Typography>
+            <Typography paddingLeft={1} variant="button">
+              Лучшие результаты
+            </Typography>
             <IconButton
               aria-label="expand row"
               size="small"
@@ -89,15 +92,14 @@ export const BestTable = () => {
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </Stack>
-
-          <Table aria-label="Best table" size="small">
-            <TableBody>
-              <TableRow>
-                <TableCell>
-                  <Collapse in={open} timeout="auto" unmountOnExit>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Table aria-label="Best table" size="small">
+              <TableBody>
+                <TableRow>
+                  <TableCell>
                     <Table size="small">
                       <TableBody>
-                        {open &&
+                        {true &&
                           results.map((result, place) => (
                             <Row
                               key={place}
@@ -108,11 +110,11 @@ export const BestTable = () => {
                           ))}
                       </TableBody>
                     </Table>
-                  </Collapse>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Collapse>
         </TableContainer>
       </Box>
     </Stack>
