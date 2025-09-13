@@ -62,7 +62,7 @@ export const Home = () => {
               </CardContent>
               <CardActions sx={{ px: 2, pb: 2 }}>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   size="large"
                   fullWidth
                   onClick={() => navigate("/multi")}
