@@ -63,13 +63,13 @@ export const Equation = ({
       </Typography>
       <Typography>{number2}</Typography>
       <Typography px={0.5}>=</Typography>
-      <Box width={"45px"} mr={1} border={`1px solid darkgrey`}>
+      <Box width={"80px"} mr={1} border={`1px solid darkgrey`}>
         {isEditable ? (
           <StyledInput
             size="small"
             type="number"
             inputMode="numeric"
-            inputProps={{ min: 0, max: 100 }}
+            // inputProps={{ min: 0, max: 100 }}
             autoComplete="off"
             onChange={onInputChange}
             disableUnderline
