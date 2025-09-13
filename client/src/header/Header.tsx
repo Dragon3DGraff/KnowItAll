@@ -35,10 +35,8 @@ export const Header = ({ onNameChanged }: Props) => {
       direction={"row"}
       width={"100%"}
       justifyContent={"space-between"}
-      // minWidth={"250px"}
-      p={1}
     >
-      <Stack gap={0.5} direction={"row"}>
+      <Stack gap={0.5} direction={"row"} p={1}>
         {location.pathname !== "/" ? (
           <Button
             variant="outlined"
@@ -53,7 +51,12 @@ export const Header = ({ onNameChanged }: Props) => {
           <Button
             variant="outlined"
             size="small"
-            sx={{ px: 0.5, fontSize: "11px", textAlign: "center", svg: { mr: 0 } }}
+            sx={{
+              px: 0.5,
+              fontSize: "11px",
+              textAlign: "center",
+              svg: { mr: 0 },
+            }}
             onClick={() => navigate("/statistics")}
           >
             {isMobile ? <EmojiEventsIcon sx={{ mr: 1 }} /> : "Достижения"}
@@ -77,16 +80,6 @@ export const Header = ({ onNameChanged }: Props) => {
             onClick={() => navigate("/game")}
           >
             Игра
-          </Button>
-        )}
-        {location.pathname !== "/mixed-tasks" && (
-          <Button
-            variant="outlined"
-            size="small"
-            sx={{ px: 0.5, fontSize: "11px" }}
-            onClick={() => navigate("/mixed-tasks")}
-          >
-            Смешанные задания
           </Button>
         )}
       </Stack>

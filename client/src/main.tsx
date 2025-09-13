@@ -9,6 +9,8 @@ import { getTable } from "./calc/getMultiplicationTable.ts"
 import { AdminPanel } from "./admin/AdminPanel.tsx"
 import { ErrorPage } from "./ErrorPage.tsx"
 import { MixedTasks } from "./MixedTasks/MixedTasks.tsx"
+import { Home } from "./Home/Home.tsx"
+import { Navigate } from "react-router-dom"
 
 const router = createBrowserRouter([
   {
@@ -16,8 +18,9 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
+      { index: true, element: <Home />, errorElement: <ErrorPage /> },
       {
-        index: true,
+        path: "multi",
         element: <MultiplicationTableSolve table={getTable()} />,
         errorElement: <ErrorPage />,
       },
@@ -36,6 +39,8 @@ const router = createBrowserRouter([
         element: <MixedTasks />,
         errorElement: <ErrorPage />,
       },
+      // legacy redirects
+      { path: "calc", element: <Navigate to="/mixed-tasks" replace /> },
     ],
   },
 ])
