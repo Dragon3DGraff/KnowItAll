@@ -1,14 +1,14 @@
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { registerSW } from "virtual:pwa-register";
-import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-import { Statistics } from "./multiplicationTable/Statistics.tsx";
-import { MultiplicationTableSolve } from "./multiplicationTable/MultiplicationTable.tsx";
-import { getTable } from "./calc/getMultiplicationTable.ts";
-import { AdminPanel } from "./admin/AdminPanel.tsx";
-import { ErrorPage } from "./ErrorPage.tsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { registerSW } from "virtual:pwa-register"
+import ReactDOM from "react-dom/client"
+import App from "./App.tsx"
+import "./index.css"
+import { Statistics } from "./multiplicationTable/Statistics.tsx"
+import { MultiplicationTableSolve } from "./multiplicationTable/MultiplicationTable.tsx"
+import { getTable } from "./calc/getMultiplicationTable.ts"
+import { AdminPanel } from "./admin/AdminPanel.tsx"
+import { ErrorPage } from "./ErrorPage.tsx"
+import { MixedTasks } from "./MixedTasks/MixedTasks.tsx"
 
 const router = createBrowserRouter([
   {
@@ -31,20 +31,23 @@ const router = createBrowserRouter([
         element: <AdminPanel />,
         errorElement: <ErrorPage />,
       },
+      {
+        path: "mixed-tasks",
+        element: <MixedTasks />,
+        errorElement: <ErrorPage />,
+      },
     ],
   },
-]);
+])
 
 const updateSW = registerSW({
   onNeedRefresh() {
     if (confirm("New content available. Reload?")) {
-      updateSW(true);
+      updateSW(true)
     }
   },
-});
+})
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
-);
+  <RouterProvider router={router} />
+)
