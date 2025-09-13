@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Equation } from "../multiplicationTable/Equation"
 import { Mode, Result, TableItem } from "../types/multiplication.types"
-import { Timer } from "../multiplicationTable/Timer"
+// import { Timer } from "../multiplicationTable/Timer"
 import { generateMixedTasks } from "../calc/generateMixedTasks"
 import { useUser } from "../hooks/useUser"
 import { sendResults } from "../api/sendResults"
@@ -17,7 +17,7 @@ export const MixedTasks = () => {
   const [finished, setFinished] = useState<boolean>(false)
   const [tasks, setTasks] = useState<TableItem[]>([])
   const { user } = useUser()
-  const [mode, setMode] = useState<Mode>(Mode.TRAIN)
+  const [mode] = useState<Mode>(Mode.TRAIN)
   const [sended, setSended] = useState<{
     id: string
     timer: number
@@ -132,25 +132,25 @@ export const MixedTasks = () => {
     totalSolved,
   ])
 
-  const onTimerFinished = async (timer: number) => {
-    const totalSolved = results.length
-    const estimate = calcEstimate(
-      correctCount,
-      totalSolved,
-      mode === Mode.EXAM ? timer : undefined
-    )
+//   const onTimerFinished = async (timer: number) => {
+//     const totalSolved = results.length
+//     const estimate = calcEstimate(
+//       correctCount,
+//       totalSolved,
+//       mode === Mode.EXAM ? timer : undefined
+//     )
 
-    setEstimate(estimate)
-    const res = await sendResults(timer, results, mode, user?.userName)
+//     setEstimate(estimate)
+//     const res = await sendResults(timer, results, mode, user?.userName)
 
-    if (res?.ok) {
-      setSended({ id: res.id, timer })
-    }
-  }
+//     if (res?.ok) {
+//       setSended({ id: res.id, timer })
+//     }
+//   }
 
-  const onModeChange = () => {
-    setMode((prev) => (prev === Mode.EXAM ? Mode.TRAIN : Mode.EXAM))
-  }
+//   const onModeChange = () => {
+//     setMode((prev) => (prev === Mode.EXAM ? Mode.TRAIN : Mode.EXAM))
+//   }
 
   const allFilled =
     results.filter((r) => r.userAnswer !== undefined).length === tasks.length
