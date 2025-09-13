@@ -38,27 +38,27 @@ export const Header = ({ onNameChanged }: Props) => {
     >
       <Stack px={3} gap={1} direction={"row"}>
         {location.pathname !== "/" ? (
-          <Button variant="outlined" onClick={() => navigate("/")}>
+          <Button variant="outlined" size="small" onClick={() => navigate("/")}>
             <ArrowBackIcon sx={{ mr: 1 }} />
             Домой
           </Button>
         ) : (
-          <Button variant="outlined" onClick={() => navigate("/statistics")}>
+          <Button variant="outlined" size="small" onClick={() => navigate("/statistics")}>
             Достижения
           </Button>
         )}
         {isAdmin && (
-          <Button variant="outlined" onClick={() => navigate("/admin")}>
+          <Button variant="outlined" size="small" onClick={() => navigate("/admin")}>
             Админка
           </Button>
         )}
         {isAdmin && (
-          <Button variant="outlined" onClick={() => navigate("/game")}>
+          <Button variant="outlined" size="small" onClick={() => navigate("/game")}>
             Игра
           </Button>
         )}
         {
-          <Button variant="outlined" onClick={() => navigate("/mixed-tasks")}>
+          <Button variant="outlined" size="small" onClick={() => navigate("/mixed-tasks")}>
             Смешанные задания
           </Button>
         }
