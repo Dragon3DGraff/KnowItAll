@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material"
+import { Box, Button, Stack, Typography, useMediaQuery } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Equation } from "../multiplicationTable/Equation"
@@ -29,6 +29,7 @@ export const MixedTasks = () => {
   } | null>(null)
   const [estimate, setEstimate] = useState<number | null>(null)
   const navigate = useNavigate()
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   const sharedId = searchParams.get("share")
 
@@ -158,7 +159,7 @@ export const MixedTasks = () => {
   return (
     <Stack alignItems={"center"} p={0} my={0}>
       <Stack>
-        <Typography variant="h5">Тренировка устного счёта</Typography>
+        <Typography variant={isMobile ? "h6" : "h5"}>Тренировка устного счёта</Typography>
         {/* {started && (
           <Timer
             started={started}

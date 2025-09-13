@@ -1,4 +1,4 @@
-import { Button, Stack } from "@mui/material"
+import { Button, Stack, useMediaQuery } from "@mui/material"
 import { useEffect } from "react"
 import { checkIsAuth } from "../api/checkIsAuth"
 import { UserName } from "../user/UserName"
@@ -7,6 +7,7 @@ import { User } from "../types/api.types"
 import { useLocation, useNavigate } from "react-router-dom"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { useUser } from "../hooks/useUser"
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
 
 type Props = {
   onNameChanged: (user: User | null) => void
@@ -15,6 +16,7 @@ export const Header = ({ onNameChanged }: Props) => {
   const { user, isAdmin } = useUser()
   const navigate = useNavigate()
   const location = useLocation()
+  const isMobile = useMediaQuery("(max-width: 600px)")
 
   useEffect(() => {
     if (!user?.userName) {
@@ -31,37 +33,55 @@ export const Header = ({ onNameChanged }: Props) => {
   return (
     <Stack
       direction={"row"}
-      width={"100vw"}
+      width={"100%"}
       justifyContent={"space-between"}
-      minWidth={"250px"}
-      p={1}
     >
-      <Stack px={3} gap={1} direction={"row"}>
+      <Stack gap={0.5} direction={"row"} p={1}>
         {location.pathname !== "/" ? (
-          <Button variant="outlined" size="small" onClick={() => navigate("/")}>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ px: 0.5, fontSize: "11px" }}
+            onClick={() => navigate("/")}
+          >
             <ArrowBackIcon sx={{ mr: 1 }} />
             Домой
           </Button>
         ) : (
-          <Button variant="outlined" size="small" onClick={() => navigate("/statistics")}>
-            Достижения
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{
+              px: 0.5,
+              fontSize: "11px",
+              textAlign: "center",
+              svg: { mr: 0 },
+            }}
+            onClick={() => navigate("/statistics")}
+          >
+            {isMobile ? <EmojiEventsIcon sx={{ mr: 1 }} /> : "Достижения"}
           </Button>
         )}
         {isAdmin && (
-          <Button variant="outlined" size="small" onClick={() => navigate("/admin")}>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ px: 0.5, fontSize: "11px" }}
+            onClick={() => navigate("/admin")}
+          >
             Админка
           </Button>
         )}
         {isAdmin && (
-          <Button variant="outlined" size="small" onClick={() => navigate("/game")}>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ px: 0.5, fontSize: "11px" }}
+            onClick={() => navigate("/game")}
+          >
             Игра
           </Button>
         )}
-        {
-          <Button variant="outlined" size="small" onClick={() => navigate("/mixed-tasks")}>
-            Смешанные задания
-          </Button>
-        }
       </Stack>
       <UserName onNameChanged={onNameChanged} />
     </Stack>

@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography, useMediaQuery } from "@mui/material";
 import "./App.css";
 
 import { createContext, useState } from "react";
@@ -17,13 +17,14 @@ function App() {
   const onNameChanged = (user: User | null) => {
     setUser(user);
   };
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   return (
     <UserContext.Provider value={user}>
-      <Stack minHeight={"100vh"}>
+      <Stack minHeight={"100vh"} width={"100vw"}>
         <DevInfo />
         <Header onNameChanged={onNameChanged} />
-        <Typography variant="h3" color={"maroon"} alignSelf={"center"}>
+        <Typography variant={isMobile ? "h4" : "h3"} color={"maroon"} alignSelf={"center"}>
           Всезнайка
         </Typography>
         <BestTable />
