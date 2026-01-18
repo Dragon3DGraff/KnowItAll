@@ -153,13 +153,13 @@ router.post(
       }
 
       const token = jwt.sign({ userId: user.id }, config.get("jwtSecret"), {
-        expiresIn: "7d",
+        expiresIn: "30d",
       });
 
       res.clearCookie("token");
       res.cookie("token", token, {
         httpOnly: true,
-        maxAge: 3600000,
+        maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
       logger.info(`${req.url}: id: ${user.id} ${user.userName} залогинился`);
