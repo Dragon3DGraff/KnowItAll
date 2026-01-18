@@ -18,14 +18,28 @@ app.use(
 const db = require("./models");
 
 app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://wishhdd.ru",
+  ];
+  const origin = req.headers.origin;
   // if (process.env.NODE_ENV !== "production") {
-  res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
-
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
   res.header("Access-Control-Allow-Credentials", true);
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization, credentials"
   );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   // }
   next();
 });
