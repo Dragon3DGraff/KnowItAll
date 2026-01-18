@@ -33,5 +33,28 @@ db.sequelize = sequelize;
 
 db.Users = require("./Users.model.js")(sequelize, Sequelize);
 db.Results = require("./Results.model.js")(sequelize, Sequelize);
+db.shopping = require("./Shopping.model.js")(sequelize, Sequelize);
+db.shoppingItems = require("./ShoppingItem.model.js")(sequelize, Sequelize);
+
+// Связь Список -> Товары
+db.shopping.hasMany(db.shoppingItems, {
+  foreignKey: "list_id",
+  as: "items",
+  onDelete: "CASCADE", // Удалять товары при удалении списка
+});
+db.shoppingItems.belongsTo(db.shopping, {
+  foreignKey: "list_id",
+  as: "list",
+});
+
+// Связь Пользователь -> Списки
+db.Users.hasMany(db.shopping, {
+  foreignKey: "owner_id",
+  as: "ownedLists",
+});
+db.shopping.belongsTo(db.Users, {
+  foreignKey: "owner_id",
+  as: "owner",
+});
 
 module.exports = db;
