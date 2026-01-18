@@ -68,7 +68,8 @@ if (process.env.NODE_ENV === "production") {
 
 async function start() {
   try {
-    await db.sequelize.authenticate();
+    // await db.sequelize.authenticate();
+    await db.sequelize.sync({ alter: true });
     logger.info("sequelize: успешно подключился к БД");
   } catch (error) {
     logger.error("sequelize: Не удалось подключиться к БД: ...");
