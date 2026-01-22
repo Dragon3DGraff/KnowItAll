@@ -179,19 +179,22 @@ router.post(
 router.post("/logout", async (req, res) => {
   try {
     const token = req.cookies.token;
-
     let userId;
     if (token) {
-      const decoded = jwt.verify(token, config.get("jwtSecret"));
-      if (decoded.userId) {
-        userId = decoded.userId;
-      }
+      try {
+        const decoded = jwt.verify(token, config.get("jwtSecret"));
+        if (decoded.userId) {
+          userId = decoded.userId;
+        }
+      } catch (e) {}
     }
-
-    res.clearCookie("token");
-
-    logger.info(`${req.url}: ${userId} разлогинился`);
-
+    const isProduction = process.env.NODE_ENV === "production";
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    });
+    logger.info(`${req.url}: ${userId || "Неизвестный"} разлогинился`);
     res.json({ userId: undefined, userName: undefined, role: undefined });
   } catch (error) {
     res.status(500).json({ message: "ERROR" });
