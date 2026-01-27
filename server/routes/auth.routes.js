@@ -155,14 +155,16 @@ router.post(
       const token = jwt.sign({ userId: user.id }, config.get("jwtSecret"), {
         expiresIn: "30d",
       });
-      const isProduction = process.env.NODE_ENV === "production";
+      // const isProduction = process.env.NODE_ENV === "production";
 
       res.clearCookie("token");
       res.cookie("token", token, {
         httpOnly: true,
         maxAge: 30 * 24 * 60 * 60 * 1000,
-        sameSite: isProduction ? "none" : "lax",
-        secure: isProduction,
+        // sameSite: isProduction ? "none" : "lax",
+        // secure: isProduction,
+        sameSite: "none",
+        secure: true,
       });
 
       logger.info(`${req.url}: id: ${user.id} ${user.userName} залогинился`);
