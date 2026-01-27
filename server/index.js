@@ -8,6 +8,7 @@ const logger = require("./logger/Logger");
 
 const app = express();
 
+app.set("trust proxy", 1);
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
     "http://127.0.0.1:5173",
     "http://localhost:5173",
     "https://wishhdd.ru",
+    "https://www.wishhdd.ru",
   ];
   const origin = req.headers.origin;
   // if (process.env.NODE_ENV !== "production") {
