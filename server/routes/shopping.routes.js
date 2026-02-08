@@ -5,9 +5,11 @@ const router = Router();
 const auth = require("../middleware/auth.middleware");
 const db = require("../models");
 
-// Достаем модели
 const Shopping = db.shopping;
 const ShoppingItem = db.shoppingItems;
+const ListInvite = db.listInvite;
+const ListBlockedUser = db.listBlockedUser;
+const ListRefused = db.listRefused;
 
 // Хелпер для проверки доступа (Владелец или Участник)
 const hasAccess = (list, userId) => {
@@ -30,7 +32,6 @@ router.get("/", auth, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Ищем списки, где я владелец ИЛИ мой ID есть в массиве members
     const lists = await Shopping.findAll({
       where: {
         [Op.or]: [
@@ -41,9 +42,36 @@ router.get("/", auth, async (req, res) => {
         ],
       },
       order: [["updated_at", "DESC"]],
+      include: [
+        { model: db.Users, as: "owner", attributes: ["userName"] },
+      ],
     });
 
-    res.json(lists);
+    const payload = await Promise.all(
+      lists.map(async (list) => {
+        const row = list.toJSON();
+        row.owner_user_name = list.owner?.userName ?? null;
+        delete row.owner;
+        if (list.owner_id === userId) {
+          const pending = await ListInvite.findAll({
+            where: { list_id: list.id },
+            include: [
+              { model: db.Users, as: "invitee", attributes: ["id", "userName"] },
+            ],
+          });
+          row.pending_invites = pending.map((inv) => {
+            const j = inv.toJSON();
+            return {
+              inviteeId: j.invitee_id,
+              inviteeName: j.invitee?.userName ?? "",
+            };
+          });
+        }
+        return row;
+      })
+    );
+
+    res.json(payload);
   } catch (e) {
     console.error("Error fetching lists:", e);
     res.status(500).json({ message: "Server error" });
@@ -58,34 +86,184 @@ router.post("/", auth, async (req, res) => {
 
     const existingList = await Shopping.findByPk(id);
 
+    const parseMembers = (m) => {
+      if (!m || !Array.isArray(m)) return [];
+      return m.map((x) => Number(x)).filter((x) => !Number.isNaN(x));
+    };
+
     if (existingList) {
       if (!hasAccess(existingList, userId)) {
         return res.status(403).json({ message: "Access denied" });
       }
 
       const isOwner = existingList.owner_id === userId;
+      const currentMembers = parseMembers(existingList.members);
+      const incomingMembers = parseMembers(members);
+      const newMemberIds = incomingMembers.filter((mid) => !currentMembers.includes(mid));
+
+      if (isOwner && newMemberIds.length > 0) {
+        for (const inviteeId of newMemberIds) {
+          const blocked = await ListBlockedUser.findOne({
+            where: { blocker_id: inviteeId, blocked_id: userId },
+          });
+          if (blocked) continue;
+
+          const refused = await ListRefused.findOne({
+            where: { user_id: inviteeId, list_id: existingList.id },
+          });
+          if (refused) continue;
+
+          await ListInvite.findOrCreate({
+            where: { list_id: existingList.id, invitee_id: inviteeId },
+            defaults: { inviter_id: userId, list_id: existingList.id, invitee_id: inviteeId },
+          });
+        }
+      }
+
+      const membersToSave = isOwner && members ? currentMembers : existingList.members;
 
       await existingList.update({
         title,
-        theme_color: themeColor,
         updated_at: updated_at || Date.now(),
-        // Менять состав участников может только Владелец
-        members: isOwner && members ? members : existingList.members,
+        members: membersToSave,
       });
     } else {
       await Shopping.create({
         id,
         owner_id: userId,
         title,
-        members: members || [],
+        members: [],
         updated_at: updated_at || Date.now(),
       });
+
+      const incomingMembers = parseMembers(members);
+      for (const inviteeId of incomingMembers) {
+        const blocked = await ListBlockedUser.findOne({
+          where: { blocker_id: inviteeId, blocked_id: userId },
+        });
+        if (blocked) continue;
+
+        const refused = await ListRefused.findOne({
+          where: { user_id: inviteeId, list_id: id },
+        });
+        if (refused) continue;
+
+        await ListInvite.findOrCreate({
+          where: { list_id: id, invitee_id: inviteeId },
+          defaults: { inviter_id: userId, list_id: id, invitee_id: inviteeId },
+        });
+      }
     }
 
     res.status(201).json({ message: "Saved" });
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Error saving list" });
+  }
+});
+
+// --- 2b. GET ПРИГЛАШЕНИЙ (до /:id) ---
+router.get("/invites", auth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const invites = await ListInvite.findAll({
+      where: { invitee_id: userId },
+      include: [
+        { model: db.shopping, as: "list", attributes: ["id", "title"] },
+        { model: db.Users, as: "inviter", attributes: ["id", "userName"] },
+      ],
+    });
+
+    const payload = invites.map((inv) => {
+      const row = inv.toJSON();
+      return {
+        inviteId: row.id,
+        listId: row.list_id,
+        listTitle: row.list?.title ?? "",
+        sharerId: row.inviter_id,
+        sharerName: row.inviter?.userName ?? "",
+      };
+    });
+
+    res.json(payload);
+  } catch (e) {
+    console.error("Error fetching invites:", e);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// --- 2c. ПРИНЯТЬ ПРИГЛАШЕНИЕ ---
+router.post("/invites/:id/accept", auth, async (req, res) => {
+  try {
+    const inviteId = req.params.id;
+    const userId = req.user.userId;
+
+    const invite = await ListInvite.findByPk(inviteId, {
+      include: [{ model: db.shopping, as: "list" }],
+    });
+    if (!invite || invite.invitee_id !== userId) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    const list = invite.list;
+    if (!list) return res.status(404).json({ message: "List not found" });
+
+    let members = list.members || [];
+    if (typeof members === "string") {
+      try {
+        members = JSON.parse(members);
+      } catch (e) {
+        members = [];
+      }
+    }
+    if (!members.includes(userId)) {
+      members = [...members, userId];
+    }
+
+    await list.update({
+      members,
+      updated_at: Date.now(),
+    });
+    await invite.destroy();
+
+    res.json({ message: "Accepted" });
+  } catch (e) {
+    console.error("Error accepting invite:", e);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// --- 2d. ОТКЛОНИТЬ ПРИГЛАШЕНИЕ ---
+router.post("/invites/:id/decline", auth, async (req, res) => {
+  try {
+    const inviteId = req.params.id;
+    const userId = req.user.userId;
+    const { reason } = req.body || {};
+
+    const invite = await ListInvite.findByPk(inviteId);
+    if (!invite || invite.invitee_id !== userId) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    if (reason === "forever_list") {
+      await ListRefused.findOrCreate({
+        where: { user_id: userId, list_id: invite.list_id },
+        defaults: { user_id: userId, list_id: invite.list_id },
+      });
+    }
+    if (reason === "block_user") {
+      await ListBlockedUser.findOrCreate({
+        where: { blocker_id: userId, blocked_id: invite.inviter_id },
+        defaults: { blocker_id: userId, blocked_id: invite.inviter_id },
+      });
+    }
+
+    await invite.destroy();
+    res.json({ message: "Declined" });
+  } catch (e) {
+    console.error("Error declining invite:", e);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -135,6 +313,62 @@ router.delete("/:id", auth, async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Error deleting" });
+  }
+});
+
+// --- 3b. ВЫЙТИ ИЗ СПИСКА (участник — убрать себя; владелец — передать права первому) ---
+router.post("/:id/leave", auth, async (req, res) => {
+  try {
+    const listId = req.params.id;
+    const userId = req.user.userId;
+
+    const list = await Shopping.findByPk(listId);
+    if (!list) return res.status(404).json({ message: "Not found" });
+
+    if (!hasAccess(list, userId)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    let members = list.members || [];
+    if (typeof members === "string") {
+      try {
+        members = JSON.parse(members);
+      } catch (e) {
+        members = [];
+      }
+    }
+
+    const numUserId = Number(userId);
+
+    if (list.owner_id === userId) {
+      if (members.length > 0) {
+        const newOwnerId = members[0];
+        const newMembers = members.slice(1);
+        await list.update({
+          owner_id: newOwnerId,
+          members: newMembers,
+          updated_at: Date.now(),
+        });
+        return res.json({ message: "You left the list; ownership transferred" });
+      }
+      await ShoppingItem.destroy({ where: { list_id: listId } });
+      await list.destroy();
+      return res.json({ message: "List deleted (no members left)" });
+    }
+
+    if (members.includes(numUserId)) {
+      const newMembers = members.filter((id) => id !== numUserId);
+      await list.update({
+        members: newMembers,
+        updated_at: Date.now(),
+      });
+      return res.json({ message: "You left the list" });
+    }
+
+    return res.status(403).json({ message: "Access denied" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Error leaving list" });
   }
 });
 
