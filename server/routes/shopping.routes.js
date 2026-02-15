@@ -120,7 +120,7 @@ router.post("/", auth, async (req, res) => {
         }
       }
 
-      const membersToSave = isOwner && members ? currentMembers : existingList.members;
+      const membersToSave = isOwner && members ? incomingMembers : existingList.members;
 
       await existingList.update({
         title,
