@@ -280,6 +280,8 @@ router.delete("/:id", auth, async (req, res) => {
     if (list.owner_id === userId) {
       // Удаляем товары
       await ShoppingItem.destroy({ where: { list_id: listId } });
+      await ListInvite.destroy({ where: { list_id: listId } });
+      await ListRefused.destroy({ where: { list_id: listId } });
       // Удаляем список
       await list.destroy();
       return res.json({ message: "List deleted permanently" });
@@ -352,6 +354,8 @@ router.post("/:id/leave", auth, async (req, res) => {
         return res.json({ message: "You left the list; ownership transferred" });
       }
       await ShoppingItem.destroy({ where: { list_id: listId } });
+      await ListInvite.destroy({ where: { list_id: listId } });
+      await ListRefused.destroy({ where: { list_id: listId } });
       await list.destroy();
       return res.json({ message: "List deleted (no members left)" });
     }
