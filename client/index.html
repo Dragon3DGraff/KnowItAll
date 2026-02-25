@@ -1,60 +1,80 @@
 <!doctype html>
 <html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./ico.svg" sizes="any" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fff" />
 
-<head>
+    <meta
+      name="description"
+      content="Легкое приложение для тренировки и проверки знаний таблицы умножения для школьников и взрослых."
+    />
+    <meta name="keywords" content="таблица умножения, математика" />
+    <meta name="image" content="https://know-it-all.ru/nez.png" />
+    <meta name="Author" content="Денисов «Dragon3DGraff» Илья" />
+    <meta name="Copyright" content="Денисов «Dragon3DGraff» Илья" />
 
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./ico.svg" sizes="any"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#fff"/>
+    <meta property="og:title" content="Всезнайка" />
+    <meta
+      property="og:description"
+      content="Легкое приложение для тренировки и проверки знаний таблицы умножения для школьников и взрослых."
+    />
+    <meta property="og:image" content="https://know-it-all.ru/nez.png" />
+    <meta property="og:url" content="https://know-it-all.ru/" />
 
-  <meta name="description"
-    content="Легкое приложение для тренировки и проверки знаний таблицы умножения для школьников и взрослых." />
-  <meta name="keywords" content="таблица умножения, математика" />
-  <meta name="image" content="https://know-it-all.ru/nez.png" />
-  <meta name="Author" content="Денисов «Dragon3DGraff» Илья" />
-  <meta name="Copyright" content="Денисов «Dragon3DGraff» Илья" />
+    <meta property="og:site_name" content="Всезнайка" />
 
-  <meta property="og:title" content="Всезнайка" />
-  <meta property="og:description"
-    content="Легкое приложение для тренировки и проверки знаний таблицы умножения для школьников и взрослых." />
-  <meta property="og:image" content="https://know-it-all.ru/nez.png" />
-  <meta property="og:url" content="https://know-it-all.ru/" />
+    <title>Всезнайка</title>
+  </head>
 
-  <meta name="twitter:card" content="summary_large_image" />
+  <body>
+    <script src="https://yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
+    <script src="https://yastatic.net/share2/share.js"></script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+      (function (m, e, t, r, i, k, a) {
+        m[i] =
+          m[i] ||
+          function () {
+            (m[i].a = m[i].a || []).push(arguments);
+          };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) {
+          if (document.scripts[j].src === r) {
+            return;
+          }
+        }
+        ((k = e.createElement(t)),
+          (a = e.getElementsByTagName(t)[0]),
+          (k.async = 1),
+          (k.src = r),
+          a.parentNode.insertBefore(k, a));
+      })(
+        window,
+        document,
+        "script",
+        "https://mc.yandex.ru/metrika/tag.js",
+        "ym",
+      );
 
-
-  <meta property="og:site_name" content="Всезнайка" />
-  <meta name="twitter:image:alt" content="Таблица умножения" />
-
-  <title>Всезнайка</title>
-</head>
-
-<body>
-  <script src="https://yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
-  <script src="https://yastatic.net/share2/share.js"></script>
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript">
-    (function (m, e, t, r, i, k, a) {
-      m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
-      m[i].l = 1 * new Date();
-      for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
-      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a);
-    })
-      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-    ym(96000563, "init", {
-      clickmap: true,
-      trackLinks: true,
-      accurateTrackBounce: true
-    });
-  </script>
-  <noscript>
-    <div><img src="https://mc.yandex.ru/watch/96000563" style="position:absolute; left:-9999px;" alt="" /></div>
-  </noscript>
-  <!-- /Yandex.Metrika counter -->
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-
+      ym(96000563, "init", {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+      });
+    </script>
+    <noscript>
+      <div>
+        <img
+          src="https://mc.yandex.ru/watch/96000563"
+          style="position: absolute; left: -9999px"
+          alt=""
+        />
+      </div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
