@@ -1,165 +1,137 @@
-import { Box, Button, Stack, Typography, useMediaQuery } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
-import { Equation } from "../multiplicationTable/Equation"
-import { Mode, Result, TableItem } from "../types/multiplication.types"
+import { Box, Button, Stack, Typography, useMediaQuery } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Equation } from "../multiplicationTable/Equation";
+import { Mode, Result, TableItem } from "../types/multiplication.types";
 // import { Timer } from "../multiplicationTable/Timer"
-import { generateMixedTasks } from "../calc/generateMixedTasks"
-import { useUser } from "../hooks/useUser"
-import { sendResults } from "../api/sendResults"
-import { getStatisticsById } from "../api/getStatisticsById"
-import { secondsToMin } from "../utils/secondsToMin"
-import { calcEstimate } from "../calc/calcEstimate"
+import { getStatisticsById } from "../api/getStatisticsById";
+import { sendResults } from "../api/sendResults";
+import { calcEstimate } from "../calc/calcEstimate";
+import { generateMixedTasks } from "../calc/generateMixedTasks";
+import { useUser } from "../hooks/useUser";
+import { useShare } from "../hooks/useShare";
 
 export const MixedTasks = () => {
-  const [results, setResults] = useState<Result[]>([])
-  const [started, setStarted] = useState<boolean>(false)
-  const [finished, setFinished] = useState<boolean>(false)
-  const [tasks, setTasks] = useState<TableItem[]>([])
-  const { user } = useUser()
-  const [mode] = useState<Mode>(Mode.TRAIN)
+  const [results, setResults] = useState<Result[]>([]);
+  const [started, setStarted] = useState<boolean>(false);
+  const [finished, setFinished] = useState<boolean>(false);
+  const [tasks, setTasks] = useState<TableItem[]>([]);
+  const { user } = useUser();
+  const [mode] = useState<Mode>(Mode.TRAIN);
   const [sended, setSended] = useState<{
-    id: string
-    timer: number
-  } | null>(null)
-  const [searchParams, setSearchParams] = useSearchParams()
+    id: string;
+    timer: number;
+  } | null>(null);
+  const [searchParams] = useSearchParams();
   const [shared, setShared] = useState<{
-    userName: string
-    timer?: number
-  } | null>(null)
-  const [estimate, setEstimate] = useState<number | null>(null)
-  const navigate = useNavigate()
+    userName: string;
+    timer?: number;
+  } | null>(null);
+  const [estimate, setEstimate] = useState<number | null>(null);
+  const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 600px)");
 
-  const sharedId = searchParams.get("share")
+  const sharedId = searchParams.get("share");
 
   const onReplay = useCallback(() => {
-    setResults([])
-    setFinished(false)
-    setTasks([])
-    setStarted(false)
-    setSended(null)
-    setShared(null)
-    setEstimate(null)
-    navigate("/mixed-tasks")
-  }, [navigate])
+    setResults([]);
+    setFinished(false);
+    setTasks([]);
+    setStarted(false);
+    setSended(null);
+    setShared(null);
+    setEstimate(null);
+    navigate("/mixed-tasks");
+  }, [navigate]);
 
   useEffect(() => {
     if (sharedId && results.length === 0) {
       getStatisticsById(sharedId).then((res) => {
         if (!("error" in res)) {
-          setResults(res.data.results)
+          setResults(res.data.results);
           setShared({
             userName: res.userName,
             timer: res.data.mode === Mode.EXAM ? res.data.timer : undefined,
-          })
+          });
         } else {
-          onReplay()
+          onReplay();
         }
-      })
+      });
     }
-  }, [sharedId, results.length, onReplay])
+  }, [sharedId, results.length, onReplay]);
 
   const onSolve = (result: Result) => {
     setResults((prev) => {
       if (prev.some((item) => item.id === result.id)) {
-        return prev.map((item) => (item.id === result.id ? result : item))
+        return prev.map((item) => (item.id === result.id ? result : item));
       }
-      return [...prev, result]
-    })
-  }
+      return [...prev, result];
+    });
+  };
 
   const onStart = () => {
-    const generated = generateMixedTasks()
-    setTasks(generated)
-    setStarted(true)
+    const generated = generateMixedTasks();
+    setTasks(generated);
+    setStarted(true);
     setResults(
       generated.map((task) => ({
         ...task,
         userAnswer: undefined,
         result: false,
-      }))
-    )
-  }
+      })),
+    );
+  };
 
   const onFinished = () => {
-    setFinished(true)
-  }
+    setFinished(true);
+  };
 
   const surrender = () => {
-    onReplay()
-    sendResults(0, [], mode, user?.userName)
-  }
+    onReplay();
+    sendResults(0, [], mode, user?.userName);
+  };
 
-  const correctCount = results.filter((item) => item.result).length
-  const incorrectCount = results.filter((item) => !item.result).length
-  const totalSolved = results.length
+  const correctCount = results.filter((item) => item.result).length;
+  const incorrectCount = results.filter((item) => !item.result).length;
+  const totalSolved = results.length;
 
-  useEffect(() => {
-    if (user) {
-      if (sended) {
-        setSearchParams({ share: sended.id })
-
-        const title =
-          mode === Mode.EXAM
-            ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
-                sended.timer
-              )}!`
-            : `Я решил(а) правильно ${correctCount} из ${totalSolved}!`
-
-        type YaApi = { share2: (containerId: string, config: unknown) => void }
-        const ya = (window as unknown as { Ya?: YaApi }).Ya
-        ya?.share2("ya", {
-          theme: {
-            services:
-              "vkontakte,telegram,whatsapp,odnoklassniki,twitter,viber,skype,linkedin,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
-            bare: false,
-            limit: 3,
-          },
-          content: {
-            url: `https://know-it-all.ru/mixed-tasks?share=${sended.id}`,
-            title,
-          },
-        })
-      }
-    }
-  }, [
+  useShare({
     sended,
     user,
     correctCount,
-    results.length,
-    mode,
-    setSearchParams,
     totalSolved,
-  ])
+    mode,
+  });
 
-//   const onTimerFinished = async (timer: number) => {
-//     const totalSolved = results.length
-//     const estimate = calcEstimate(
-//       correctCount,
-//       totalSolved,
-//       mode === Mode.EXAM ? timer : undefined
-//     )
+  //   const onTimerFinished = async (timer: number) => {
+  //     const totalSolved = results.length
+  //     const estimate = calcEstimate(
+  //       correctCount,
+  //       totalSolved,
+  //       mode === Mode.EXAM ? timer : undefined
+  //     )
 
-//     setEstimate(estimate)
-//     const res = await sendResults(timer, results, mode, user?.userName)
+  //     setEstimate(estimate)
+  //     const res = await sendResults(timer, results, mode, user?.userName)
 
-//     if (res?.ok) {
-//       setSended({ id: res.id, timer })
-//     }
-//   }
+  //     if (res?.ok) {
+  //       setSended({ id: res.id, timer })
+  //     }
+  //   }
 
-//   const onModeChange = () => {
-//     setMode((prev) => (prev === Mode.EXAM ? Mode.TRAIN : Mode.EXAM))
-//   }
+  //   const onModeChange = () => {
+  //     setMode((prev) => (prev === Mode.EXAM ? Mode.TRAIN : Mode.EXAM))
+  //   }
 
   const allFilled =
-    results.filter((r) => r.userAnswer !== undefined).length === tasks.length
+    results.filter((r) => r.userAnswer !== undefined).length === tasks.length;
 
   return (
     <Stack alignItems={"center"} p={0} my={0}>
       <Stack>
-        <Typography variant={isMobile ? "h6" : "h5"}>Тренировка устного счёта</Typography>
+        <Typography variant={isMobile ? "h6" : "h5"}>
+          Тренировка устного счёта
+        </Typography>
         {/* {started && (
           <Timer
             started={started}
@@ -310,5 +282,5 @@ export const MixedTasks = () => {
         <img src={nezSrc} />
       </Stack> */}
     </Stack>
-  )
-}
+  );
+};

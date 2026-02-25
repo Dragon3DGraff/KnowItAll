@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { numbers } from "../calc/getMultiplicationTable";
 import {
   Box,
   Button,
@@ -13,26 +11,29 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import { Equation } from "./Equation";
+import { useEffect, useState } from "react";
+import { numbers } from "../calc/getMultiplicationTable";
 import {
-  MultiplicationTable,
-  Sign,
-  Result,
-  TableItem,
   Mode,
+  MultiplicationTable,
+  Result,
+  Sign,
+  TableItem,
 } from "../types/multiplication.types";
 import { arrayShuffle } from "../utils/arrayShuffle";
 import { StorageHelper } from "../utils/StorageHelper";
+import { Equation } from "./Equation";
 
-import { SELECTED_NUMBERS } from "../utils/constants";
-import { sendResults } from "../api/sendResults";
-import { Header } from "./Header";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { secondsToMin } from "../utils/secondsToMin";
 import { getStatisticsById } from "../api/getStatisticsById";
-import { useUser } from "../hooks/useUser";
+import { sendResults } from "../api/sendResults";
 import { calcEstimate } from "../calc/calcEstimate";
-import nezSrc from '../media/images/nez.png'
+import { useShare } from "../hooks/useShare";
+import { useUser } from "../hooks/useUser";
+import nezSrc from "../media/images/nez.png";
+import { SELECTED_NUMBERS } from "../utils/constants";
+import { secondsToMin } from "../utils/secondsToMin";
+import { Header } from "./Header";
 
 const TableGrid = styled(Stack)(({ theme }) => ({
   maxHeight: "380px",
@@ -62,7 +63,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
     id: string;
     timer: number;
   } | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [shared, setShared] = useState<{
     userName: string;
     timer?: number;
@@ -91,7 +92,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
   }, [sharedId]);
 
   const handleCheckNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const newSelectedNumbers = {
       ...selectedNumbers,
@@ -145,7 +146,7 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
           ...task,
           userAnswer: undefined,
           result: false,
-        }))
+        })),
       );
     }
   };
@@ -175,41 +176,21 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
 
   const totalSolved = results.length;
 
-  useEffect(() => {
-    if (user) {
-      if (sended) {
-        setSearchParams({ share: sended.id });
-
-        const title =
-          mode === Mode.EXAM
-            ? `Я решил(а) правильно ${correctCount} из ${totalSolved} за ${secondsToMin(
-              sended.timer
-            )}!`
-            : `Я решил(а) правильно ${correctCount} из ${totalSolved}!`;
-
-        window.Ya.share2("ya", {
-          theme: {
-            services:
-              "vkontakte,telegram,whatsapp,odnoklassniki,twitter,viber,skype,linkedin,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
-            bare: false,
-            limit: 3,
-          },
-          content: {
-            url: `
-            https://know-it-all.ru?share=${sended.id}`,
-            title,
-          },
-        });
-      }
-    }
-  }, [sended]);
+  useShare({
+    sended,
+    user,
+    correctCount,
+    totalSolved,
+    mode,
+    baseUrl: "https://know-it-all.ru",
+  });
 
   const onTimerFinished = async (timer: number) => {
     const totalSolved = results.length;
     const estimate = calcEstimate(
       correctCount,
       totalSolved,
-      mode === Mode.EXAM ? timer : undefined
+      mode === Mode.EXAM ? timer : undefined,
     );
 
     setEstimate(estimate);
@@ -296,8 +277,9 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         {!started && !shared && (
           <Stack>
             <Typography variant="h6">
-              {`${user?.userName ? user.userName : "Выбери"
-                }, на что будем делить и умножать`}
+              {`${
+                user?.userName ? user.userName : "Выбери"
+              }, на что будем делить и умножать`}
             </Typography>
             <FormControl sx={{ my: 1 }} component="fieldset" variant="standard">
               <FormLabel component="legend"></FormLabel>
@@ -369,31 +351,31 @@ export const MultiplicationTableSolve = ({ table }: Props) => {
         <TableGrid flexWrap={"wrap"} mt={1}>
           {finished && results.length
             ? results.map((result, i) => (
-              <Equation
-                key={result.id}
-                id={result.id}
-                userAnswer={result.userAnswer}
-                number1={result.number1}
-                number2={result.number2}
-                actionSign={result.actionSign}
-                answer={result.answer}
-                tabIndex={i}
-              />
-            ))
+                <Equation
+                  key={result.id}
+                  id={result.id}
+                  userAnswer={result.userAnswer}
+                  number1={result.number1}
+                  number2={result.number2}
+                  actionSign={result.actionSign}
+                  answer={result.answer}
+                  tabIndex={i}
+                />
+              ))
             : task.map((tableItem, i) => (
-              <Equation
-                key={tableItem.id}
-                id={tableItem.id}
-                userAnswer={undefined}
-                number1={tableItem.number1}
-                number2={tableItem.number2}
-                actionSign={tableItem.actionSign}
-                answer={tableItem.answer}
-                tabIndex={i}
-                isEditable
-                onSolve={onSolve}
-              />
-            ))}
+                <Equation
+                  key={tableItem.id}
+                  id={tableItem.id}
+                  userAnswer={undefined}
+                  number1={tableItem.number1}
+                  number2={tableItem.number2}
+                  actionSign={tableItem.actionSign}
+                  answer={tableItem.answer}
+                  tabIndex={i}
+                  isEditable
+                  onSolve={onSolve}
+                />
+              ))}
           {allFilled && !finished && (
             <Box my={1}>
               <Button variant="contained" size="large" onClick={onFinished}>
