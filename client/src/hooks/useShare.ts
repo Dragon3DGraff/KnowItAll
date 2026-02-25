@@ -19,7 +19,7 @@ export const useShare = ({
   totalSolved,
   mode,
   baseUrl = "https://know-it-all.ru/mixed-tasks",
-  services = "vkontakte, telegram, odnoklassniki, reddit, qzone, renren, sinaWeibo, surfingbird, tencentWeibo",
+  services = "vkontakte,telegram,odnoklassniki,reddit,qzone,renren,sinaWeibo,surfingbird,tencentWeibo",
 }: UseShareOptions) => {
   const [, setSearchParams] = useSearchParams();
 
