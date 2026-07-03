@@ -48,19 +48,31 @@ export const Header = ({ onNameChanged }: Props) => {
             Домой
           </Button>
         ) : (
-          <Button
-            variant="outlined"
-            size="small"
-            sx={{
-              px: 0.5,
-              fontSize: "11px",
-              textAlign: "center",
-              svg: { mr: 0 },
-            }}
-            onClick={() => navigate("/statistics")}
-          >
-            {isMobile ? <EmojiEventsIcon sx={{ mr: 1 }} /> : "Достижения"}
-          </Button>
+          <>
+            <Button
+              variant="outlined"
+              size="small"
+              sx={{
+                px: 0.5,
+                fontSize: "11px",
+                textAlign: "center",
+                svg: { mr: 0 },
+              }}
+              onClick={() => navigate("/statistics")}
+            >
+              {isMobile ? <EmojiEventsIcon sx={{ mr: 1 }} /> : "Достижения"}
+            </Button>
+            {user && (
+              <Button
+                variant="outlined"
+                size="small"
+                sx={{ px: 0.5, fontSize: "11px" }}
+                onClick={() => navigate("/literature")}
+              >
+                Литература
+              </Button>
+            )}
+          </>
         )}
         {isAdmin && (
           <Button
