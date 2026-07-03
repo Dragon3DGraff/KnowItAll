@@ -5,7 +5,7 @@ const logger = require("../logger/Logger");
 const dbPassword =
   process.env.NODE_ENV === "production"
     ? config.get("PASSWORD")
-    : config.get("PASSWORD");
+    : config.get("EXT_PASSWORD")
 const host =
   process.env.NODE_ENV === "production" ? "localhost" : config.get("HOST");
 
