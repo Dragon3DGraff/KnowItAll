@@ -10,10 +10,12 @@ import {
 } from "@mui/material"
 import Grid from "@mui/material/Grid"
 import { useNavigate } from "react-router-dom"
+import { useUser } from "../hooks/useUser"
 
 export const Home = () => {
   const navigate = useNavigate()
   const isMobile = useMediaQuery("(max-width: 600px)")
+  const { user } = useUser()
 
   return (
     <Stack alignItems={"center"} px={2} py={2}>
@@ -103,6 +105,39 @@ export const Home = () => {
               </CardActions>
             </Card>
           </Grid>
+
+          {user && (
+            <Grid item xs={12} md={6}>
+              <Card sx={{ height: "100%", borderRadius: 3, boxShadow: 6 }}>
+                <CardContent>
+                  <Typography
+                    gutterBottom
+                    variant={isMobile ? "h6" : "h5"}
+                    component="div"
+                  >
+                    Литература
+                  </Typography>
+                  <Typography
+                    variant={isMobile ? "caption" : "body2"}
+                    color="text.secondary"
+                  >
+                    Читай классические произведения с закладками и удобным
+                    режимом чтения.
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ px: 2, pb: 2 }}>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    fullWidth
+                    onClick={() => navigate("/literature")}
+                  >
+                    Перейти
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          )}
         </Grid>
       </Box>
     </Stack>

@@ -11,6 +11,8 @@ import { ErrorPage } from "./ErrorPage.tsx"
 import { MixedTasks } from "./MixedTasks/MixedTasks.tsx"
 import { Home } from "./Home/Home.tsx"
 import { Navigate } from "react-router-dom"
+import { Literature } from "./literature/Literature.tsx"
+import { BookReader } from "./literature/BookReader.tsx"
 
 const router = createBrowserRouter([
   {
@@ -41,6 +43,16 @@ const router = createBrowserRouter([
       },
       // legacy redirects
       { path: "calc", element: <Navigate to="/mixed-tasks" replace /> },
+      {
+        path: "literature",
+        element: <Literature />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "literature/:bookId",
+        element: <BookReader />,
+        errorElement: <ErrorPage />,
+      },
     ],
   },
 ])

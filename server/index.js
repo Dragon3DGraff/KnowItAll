@@ -65,6 +65,7 @@ app.use("/api/data", require("./routes/results.routes"));
 app.use("/api/stat", require("./routes/statistic.routes"));
 app.use("/api/stat", require("./routes/best.routes"));
 app.use("/api/listo", require("./routes/shopping.routes"));
+app.use("/api/books", require("./routes/books.routes"));
 
 const PORT = config.get("port");
 
