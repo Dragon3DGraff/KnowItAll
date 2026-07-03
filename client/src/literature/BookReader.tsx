@@ -192,7 +192,7 @@ export const BookReader = () => {
     <Stack
       sx={{
         textAlign: "left",
-        height: "calc(100vh - 100px)",
+        height: "calc(100vh - 160px)",
         minHeight: 400,
         mx: -1,
       }}
@@ -251,7 +251,7 @@ export const BookReader = () => {
           minHeight: 0,
           display: "flex",
           flexDirection: "column",
-          overflow: viewMode === "page" ? "hidden" : undefined,
+          // overflow: viewMode === "page" ? "auto" : undefined,
         }}
       >
         <ReaderContent

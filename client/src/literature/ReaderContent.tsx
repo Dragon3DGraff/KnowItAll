@@ -78,7 +78,7 @@ export const ReaderContent = ({
       <Box
         sx={{
           ...readerTextSx(fontSize),
-          overflow: "hidden",
+          overflow: "auto",
           flex: 1,
         }}
       >
