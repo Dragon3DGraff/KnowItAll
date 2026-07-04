@@ -6,7 +6,7 @@ const BOOKS_DIR = path.join(__dirname, "..", "books");
 function filenameToMeta(filename) {
   const base = filename.replace(/\.txt$/i, "");
   const normalized = base.replace(/_/g, " ");
-  const parts = normalized.split(/\s*[–—-]\s*/);
+  const parts = normalized.split(" – ")
   if (parts.length >= 2) {
     return {
       title: parts[0].trim(),
@@ -193,10 +193,94 @@ function readBookById(id) {
   return readBookByFilename(filename);
 }
 
+function sanitizeFilenamePart(str) {
+  return String(str)
+    .replace(/[\\/:*?"<>|]/g, "")
+    .trim();
+}
+
+function buildBookFilename(title, author) {
+  const safeTitle = sanitizeFilenamePart(title);
+  const safeAuthor = author ? sanitizeFilenamePart(author) : "";
+  const base = safeAuthor ? `${safeTitle} – ${safeAuthor}` : safeTitle;
+  return `${base}.txt`;
+}
+
+function saveBook({ title, author, text }) {
+  const safeTitle = sanitizeFilenamePart(title);
+  const safeAuthor = author ? sanitizeFilenamePart(author) : "";
+  const safeText = String(text || "").trim();
+
+  if (!safeTitle) {
+    throw new Error("TITLE_REQUIRED");
+  }
+  if (!safeText) {
+    throw new Error("TEXT_REQUIRED");
+  }
+
+  const filename = buildBookFilename(safeTitle, safeAuthor);
+  fs.mkdirSync(BOOKS_DIR, { recursive: true });
+
+  const filePath = path.join(BOOKS_DIR, filename);
+  if (fs.existsSync(filePath)) {
+    throw new Error("BOOK_EXISTS");
+  }
+
+  const content = `${safeTitle}\n\n${safeText}`;
+  fs.writeFileSync(filePath, content, "utf-8");
+
+  return bookMetaFromFilename(filename);
+}
+
+function bookMetaFromFilename(filename) {
+  const meta = filenameToMeta(filename);
+  return {
+    id: getBookId(filename),
+    title: meta.title,
+    author: meta.author,
+    filename,
+  };
+}
+
+function resolveUploadedFilename(originalName, title, author) {
+  if (title && String(title).trim()) {
+    return buildBookFilename(title, author);
+  }
+
+  let filename = sanitizeFilenamePart(originalName || "");
+  if (!filename) {
+    throw new Error("INVALID_FILENAME");
+  }
+  if (!filename.toLowerCase().endsWith(".txt")) {
+    filename = `${filename}.txt`;
+  }
+  return filename;
+}
+
+function saveUploadedBookFile(file, { title, author } = {}) {
+  if (!file || !file.buffer) {
+    throw new Error("FILE_REQUIRED");
+  }
+
+  const filename = resolveUploadedFilename(file.originalname, title, author);
+  fs.mkdirSync(BOOKS_DIR, { recursive: true });
+
+  const filePath = path.join(BOOKS_DIR, filename);
+  if (fs.existsSync(filePath)) {
+    throw new Error("BOOK_EXISTS");
+  }
+
+  fs.writeFileSync(filePath, file.buffer);
+
+  return bookMetaFromFilename(filename);
+}
+
 module.exports = {
   BOOKS_DIR,
   listBooks,
   readBookById,
   getBookId,
   findFilenameById,
+  saveBook,
+  saveUploadedBookFile,
 };

@@ -1,62 +1,59 @@
-import { Typography, Box, Button } from "@mui/material";
-import { useState } from "react";
-import { Registration } from "./Registration";
-import { Login } from "./Login";
-import { logout } from "../api/logout";
-import { AuthMenu } from "./AuthMenu";
-import { User } from "../types/api.types";
-import { useUser } from "../hooks/useUser";
+import { Typography, Box, useMediaQuery, Stack, IconButton } from "@mui/material"
+import { useState } from "react"
+import { Registration } from "./Registration"
+import { Login } from "./Login"
+import { logout } from "../api/logout"
+import { AuthMenu } from "./AuthMenu"
+import { User } from "../types/api.types"
+import { useUser } from "../hooks/useUser"
+import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined"
 
 type Props = {
-  onNameChanged: (user: User | null) => void;
-};
+  onNameChanged: (user: User | null) => void
+}
 export const UserName = ({ onNameChanged }: Props) => {
-  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const { user } = useUser();
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false)
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const { user } = useUser()
+  const isMobile = useMediaQuery("(max-width: 600px)")
 
   const onDeleteName = async () => {
-    await logout();
-    onNameChanged(null);
-  };
+    await logout()
+    onNameChanged(null)
+  }
 
   const onRegistrationClose = () => {
-    setIsRegistrationOpen(false);
-  };
+    setIsRegistrationOpen(false)
+  }
 
   const onLogin = (user: User) => {
-    onNameChanged(user);
-  };
+    onNameChanged(user)
+  }
 
   const onLoginOpen = () => {
-    setIsLoginOpen(true);
-  };
+    setIsLoginOpen(true)
+  }
 
   const onLoginClose = () => {
-    setIsLoginOpen(false);
-  };
+    setIsLoginOpen(false)
+  }
 
   return (
     <>
       {user?.userName ? (
-        <Box pr={2}>
-          <Box>
-            <Typography color={"green"} variant="h6">
+        <Stack direction="row" pr={isMobile ? 1 : 2} alignItems="center">
+            <Typography color={"green"} variant={isMobile ? "body2" : "h6"}>
               Привет, {user.userName}!
             </Typography>
-          </Box>
 
-          <Box ml={3}>
-            <Button
-              variant="text"
-              size="small"
-              sx={{ fontSize: "10px", p: 0 }}
+          <Box>
+            <IconButton
               onClick={onDeleteName}
             >
-              Выйти
-            </Button>
+              <LoginOutlinedIcon sx={{ fontSize: isMobile ? "16px" : "24px" }} />
+            </IconButton>
           </Box>
-        </Box>
+        </Stack>
       ) : (
         <Box px={2}>
           <AuthMenu
@@ -74,5 +71,5 @@ export const UserName = ({ onNameChanged }: Props) => {
       />
       <Login open={isLoginOpen} onClose={onLoginClose} onLogin={onLogin} />
     </>
-  );
-};
+  )
+}
