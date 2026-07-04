@@ -7,12 +7,14 @@ var bodyParser = require("body-parser");
 const logger = require("./logger/Logger");
 
 const app = express();
+const JSON_BODY_LIMIT = "20mb";
 
 app.set("trust proxy", 1);
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: JSON_BODY_LIMIT }));
 app.use(
   bodyParser.urlencoded({
     extended: true,
+    limit: JSON_BODY_LIMIT,
   })
 );
 
@@ -47,7 +49,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
-app.use(express.json({ extended: true }));
+app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
 app.use((req, res, next) => {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";

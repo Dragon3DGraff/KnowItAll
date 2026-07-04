@@ -1,9 +1,11 @@
 const { Router } = require("express");
 const router = Router();
 const auth = require("../middleware/auth.middleware");
+const admin = require("../middleware/admin.middleware");
 const db = require("../models");
 const logger = require("../logger/Logger");
-const { listBooks, readBookById } = require("../utils/parseBook");
+const { listBooks, readBookById, saveUploadedBookFile } = require("../utils/parseBook");
+const { uploadBook } = require("../middleware/uploadBook.middleware");
 
 const BookProgress = db.bookProgress;
 const BookBookmark = db.bookBookmark;
@@ -16,6 +18,43 @@ router.get("/", auth, async (req, res) => {
   } catch (error) {
     logger.error(`books list error: ${error.message}`);
     res.status(500).json({ message: "Ошибка получения списка книг" });
+  }
+});
+
+router.post("/", auth, admin, (req, res, next) => {
+  uploadBook.single("file")(req, res, (err) => {
+    if (err) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(413).json({ message: "Файл слишком большой (максимум 20 МБ)" });
+      }
+      if (err.message === "INVALID_FILE_TYPE") {
+        return res.status(400).json({ message: "Допустимы только файлы .txt" });
+      }
+      return res.status(400).json({ message: "Ошибка загрузки файла" });
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Выберите файл .txt" });
+    }
+
+    const { title, author } = req.body;
+    const book = saveUploadedBookFile(req.file, { title, author });
+    res.status(201).json(book);
+  } catch (error) {
+    if (error.message === "BOOK_EXISTS") {
+      return res.status(409).json({ message: "Книга с таким названием уже существует" });
+    }
+    if (error.message === "FILE_REQUIRED") {
+      return res.status(400).json({ message: "Выберите файл .txt" });
+    }
+    if (error.message === "INVALID_FILENAME") {
+      return res.status(400).json({ message: "Некорректное имя файла" });
+    }
+    logger.error(`book create error: ${error.message}`);
+    res.status(500).json({ message: "Ошибка сохранения книги" });
   }
 });
 

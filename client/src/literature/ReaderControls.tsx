@@ -1,4 +1,12 @@
-import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  Typography,
+} from "@mui/material";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
@@ -73,19 +81,16 @@ export const ChapterSelect = ({
   currentIndex,
   onSelect,
 }: ChapterSelectProps) => (
-  <Box sx={{ py: 1, px: 0.5 }}>
-    <Stack direction="row" flexWrap="wrap" gap={0.5} justifyContent="center">
+  <FormControl size="small" fullWidth sx={{ py: 1, px: 0.5 }}>
+    <Select
+      value={currentIndex}
+      onChange={(e) => onSelect(Number(e.target.value))}
+    >
       {chapters.map((ch) => (
-        <Button
-          key={ch.index}
-          size="small"
-          variant={ch.index === currentIndex ? "contained" : "outlined"}
-          onClick={() => onSelect(ch.index)}
-          sx={{ fontSize: "11px", textTransform: "none" }}
-        >
-          {ch.title.length > 20 ? ch.title.slice(0, 18) + "…" : ch.title}
-        </Button>
+        <MenuItem key={ch.index} value={ch.index}>
+          {ch.title}
+        </MenuItem>
       ))}
-    </Stack>
-  </Box>
+    </Select>
+  </FormControl>
 );

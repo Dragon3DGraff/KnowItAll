@@ -1,40 +1,41 @@
-import { Box, Stack, Tab, Tabs, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useUser } from "../hooks/useUser";
-import { AdminTabItem } from "./AdminTabItem";
-import { UsersResults } from "./UsersResults";
-import { UsersInfo } from "./UsersInfo";
-import { AdminInfo } from "../types/api.types";
-import { getStatisticsAll } from "../api/getStatisticsAll";
-import { AnonimInfo } from "./AnonimInfo";
+import { Box, Stack, Tab, Tabs, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
+import { useUser } from "../hooks/useUser"
+import { AdminTabItem } from "./AdminTabItem"
+import { UsersResults } from "./UsersResults"
+import { UsersInfo } from "./UsersInfo"
+import { AdminInfo } from "../types/api.types"
+import { getStatisticsAll } from "../api/getStatisticsAll"
+import { AnonimInfo } from "./AnonimInfo"
+import { BooksAdmin } from "./BooksAdmin"
 
 function a11yProps(index: number) {
   return {
     id: `admin-tab-${index}`,
     "aria-controls": `admin-tabpanel-${index}`,
-  };
+  }
 }
 
 export const AdminPanel = () => {
-  const { user, isAdmin } = useUser();
-  const [info, setInfo] = useState<AdminInfo>();
+  const { user, isAdmin } = useUser()
+  const [info, setInfo] = useState<AdminInfo>()
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(0)
 
   useEffect(() => {
     user &&
       isAdmin &&
       getStatisticsAll().then((res) => {
-        setInfo(res);
-      });
-  }, [user, isAdmin]);
+        setInfo(res)
+      })
+  }, [user, isAdmin])
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTab(newValue);
-  };
+    setTab(newValue)
+  }
 
   if (!user || !isAdmin) {
-    return null;
+    return null
   }
 
   return (
@@ -51,10 +52,13 @@ export const AdminPanel = () => {
               value={tab}
               onChange={handleTabChange}
               aria-label="admin tabs"
+              variant="scrollable"
+              scrollButtons="auto"
             >
               <Tab label="Пользователи" {...a11yProps(0)} />
               <Tab label="Результаты пользователей" {...a11yProps(1)} />
               <Tab label="Статистика анонимов" {...a11yProps(2)} />
+              <Tab label="Книги" {...a11yProps(3)} />
             </Tabs>
           </Box>
           <AdminTabItem value={tab} index={0}>
@@ -66,8 +70,11 @@ export const AdminPanel = () => {
           <AdminTabItem value={tab} index={2}>
             <AnonimInfo info={info} />
           </AdminTabItem>
+          <AdminTabItem value={tab} index={3}>
+            <BooksAdmin />
+          </AdminTabItem>
         </Box>
       )}
     </Stack>
-  );
-};
+  )
+}

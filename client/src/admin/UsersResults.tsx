@@ -42,8 +42,11 @@ export const UsersResults = ({ info }: Props) => {
   };
   return (
     <Box>
-      <Box sx={{ maxWidth: 350 }} mt={2} mb={-5}>
-        <FormControl fullWidth>
+      <Box sx={{ maxWidth: 350 }} mt={2}>
+        <FormControl 
+          fullWidth
+          size="small"
+        >
           <InputLabel id="currentUser-label">Пользователь</InputLabel>
           <Select
             labelId="currentUser-label"

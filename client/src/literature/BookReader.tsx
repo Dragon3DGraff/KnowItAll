@@ -194,7 +194,6 @@ export const BookReader = () => {
         textAlign: "left",
         height: "calc(100vh - 160px)",
         minHeight: 400,
-        mx: -1,
       }}
     >
       <Stack
